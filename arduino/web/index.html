@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#15121B">
+<title>omaima's study lamp</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐹</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,0..100&family=Nunito:wght@400;600;700;800&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   1. TOKENS
+   ===================================================================== */
+@property --accent  {syntax:'<color>';inherits:true;initial-value:#8A8298}
+@property --accent-2{syntax:'<color>';inherits:true;initial-value:#A39BB0}
+:root{
+  --bg:#15121B; --bg-2:#1D1925;
+  --panel:rgba(255,255,255,.045); --panel-2:rgba(255,255,255,.075);
+  --edge:rgba(255,255,255,.085); --edge-2:rgba(255,255,255,.15);
+  --ink:#F5F0F8; --mist:#ADA5BA; --faint:#8A8196;
+  --lilac:#C6B4E4; --lilac-deep:#8E78B8; --rose:#E8B7CB; --honey:#F1D3A6; --mint:#A8DCC4; --danger:#F2A3AA;
+  --fur:#EFD6BD;
+  --grad:linear-gradient(135deg,#D8CAF0,#EBC2D4);
+  --display:"Fraunces",Georgia,"Times New Roman",serif;
+  --font:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+  --accent:#8A8298; --accent-2:#A39BB0;
+}
+
+/* =====================================================================
+   2. BASE
+   ===================================================================== */
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--bg);-webkit-text-size-adjust:100%}
+html,body{margin:0}
+body{font-family:var(--font);font-size:16px;line-height:1.55;color:var(--ink);min-height:100vh;overflow-x:hidden;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+button,input{font:inherit;color:inherit}
+button{-webkit-tap-highlight-color:transparent}
+h1,h2,h3,p{margin:0}
+:focus-visible{outline:2px solid var(--lilac);outline-offset:3px;border-radius:10px}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip{position:absolute;left:16px;top:-60px;z-index:100;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:800;text-decoration:none}
+.skip:focus{top:12px}
+[hidden]{display:none!important}
+
+/* Ambient sky */
+.sky{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;background:radial-gradient(120% 70% at 50% -12%,#2B2234 0%,var(--bg) 52%,#100E14 100%)}
+.blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.18;mix-blend-mode:screen}
+.b1{width:560px;height:560px;background:var(--lilac-deep);top:-200px;left:-140px;animation:drift1 40s ease-in-out infinite}
+.b2{width:480px;height:480px;background:var(--rose);top:34%;right:-200px;opacity:.12;animation:drift2 48s ease-in-out infinite}
+.b3{width:440px;height:440px;background:#B48AA8;bottom:-220px;left:18%;opacity:.1;animation:drift1 54s ease-in-out infinite reverse}
+@keyframes drift1{50%{transform:translate(110px,70px) scale(1.12)}}
+@keyframes drift2{50%{transform:translate(-90px,-50px) scale(.92)}}
+.stars{position:absolute;inset:0;background-image:
+  radial-gradient(1.2px 1.2px at 12% 22%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 32% 68%,#fff 50%,transparent 51%),
+  radial-gradient(1.4px 1.4px at 58% 14%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 76% 44%,#fff 50%,transparent 51%),
+  radial-gradient(1.2px 1.2px at 88% 78%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 22% 88%,#fff 50%,transparent 51%),
+  radial-gradient(1.3px 1.3px at 46% 40%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 66% 90%,#fff 50%,transparent 51%),
+  radial-gradient(1px 1px at 94% 12%,#fff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 6% 56%,#fff 50%,transparent 51%);
+  opacity:.22;animation:twinkle 7s ease-in-out infinite}
+@keyframes twinkle{50%{opacity:.1}}
+
+/* =====================================================================
+   3. LAYOUT
+   ===================================================================== */
+.app{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:28px clamp(14px,3vw,32px) 56px}
+.layout{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:clamp(14px,1.6vw,22px);margin-top:18px}
+.layout>*{grid-column:1/-1;min-width:0}
+@media (min-width:768px){
+  .tasks,.stats,.settings,.note-card{grid-column:span 6}
+}
+@media (min-width:1100px){
+  .hero{grid-column:span 7}.tasks{grid-column:span 5}
+  .stats{grid-column:span 7}.settings{grid-column:span 5}
+  .note-card{grid-column:1/-1}
+}
+
+/* =====================================================================
+   4. BUTTONS & FIELDS
+   ===================================================================== */
+.btn{--h:44px;min-height:var(--h);display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;
+  padding:0 20px;font-weight:800;font-size:.93rem;cursor:pointer;color:#1E1726;background:var(--grad);white-space:nowrap;
+  box-shadow:0 10px 24px -10px rgba(198,180,228,.8),inset 0 1px 0 rgba(255,255,255,.55);
+  transition:transform .18s ease,box-shadow .18s ease,filter .18s ease,background .25s ease,color .25s ease}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.05);box-shadow:0 14px 30px -10px rgba(198,180,228,.9),inset 0 1px 0 rgba(255,255,255,.55)}
+.btn:active{transform:translateY(0) scale(.97)}
+.btn svg{flex:none}
+.btn.ghost{background:var(--panel-2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--edge-2)}
+.btn.ghost:hover{box-shadow:inset 0 0 0 1px var(--lilac);filter:none}
+.btn.sm{--h:38px;padding:0 15px;font-size:.84rem}
+.btn:disabled{opacity:.38;cursor:not-allowed;transform:none;filter:none}
+.icon-btn{width:40px;height:40px;flex:none;border-radius:12px;border:0;background:none;color:var(--faint);display:grid;place-items:center;cursor:pointer;transition:color .2s,background .2s}
+.icon-btn:hover{color:var(--ink);background:var(--panel-2)}
+.link-btn{border:0;background:none;color:var(--lilac);font-weight:700;cursor:pointer;padding:6px 4px;text-decoration:underline;text-underline-offset:3px}
+.field{width:100%;min-height:46px;border:1px solid var(--edge-2);border-radius:14px;padding:10px 16px;background:rgba(10,8,14,.35);color:var(--ink);transition:border-color .2s,box-shadow .2s}
+.field::placeholder{color:var(--faint)}
+.field:focus-visible{outline:none;border-color:var(--lilac);box-shadow:0 0 0 4px rgba(198,180,228,.16)}
+.num{width:62px;min-height:38px;border:1px solid var(--edge-2);border-radius:11px;padding:4px 6px;background:rgba(10,8,14,.35);color:var(--ink);text-align:center;font-weight:700}
+.num:focus-visible{outline:none;border-color:var(--lilac);box-shadow:0 0 0 3px rgba(198,180,228,.18)}
+
+/* =====================================================================
+   5. HEADER
+   ===================================================================== */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px 20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px;min-width:0}
+.logo{width:50px;height:50px;flex:none;border-radius:17px;display:grid;place-items:center;
+  background:linear-gradient(150deg,rgba(198,180,228,.32),rgba(232,183,203,.1));border:1px solid var(--edge-2);
+  box-shadow:0 10px 26px -10px rgba(142,120,184,.8),inset 0 1px 0 rgba(255,255,255,.12)}
+.brand h1{font-family:var(--display);font-weight:600;font-size:clamp(1.3rem,2.6vw,1.65rem);line-height:1.15;letter-spacing:-.015em;font-variation-settings:"opsz" 60,"SOFT" 100}
+.brand p{color:var(--mist);font-size:.92rem;margin-top:1px}
+.conn{display:flex;align-items:center;gap:12px;padding:6px 6px 6px 16px;border-radius:999px;background:var(--panel);border:1px solid var(--edge);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:border-color .4s,box-shadow .4s}
+.conn-dot{position:relative;width:10px;height:10px;flex:none;border-radius:50%;background:#5E566B;transition:background .3s,box-shadow .3s}
+.conn[data-state=online]{border-color:rgba(168,220,196,.28)}
+.conn[data-state=online] .conn-dot{background:var(--mint);box-shadow:0 0 0 4px rgba(168,220,196,.14),0 0 14px var(--mint)}
+.conn[data-state=waiting] .conn-dot,.conn[data-state=connecting] .conn-dot{background:var(--honey);animation:pulse 1.2s ease-in-out infinite}
+.conn.pop{animation:connPop 1.1s ease}
+@keyframes connPop{30%{box-shadow:0 0 0 6px rgba(168,220,196,.18),0 0 30px rgba(168,220,196,.35)}}
+@keyframes pulse{50%{opacity:.35}}
+.conn-text{display:grid;line-height:1.2;min-width:0}
+.conn-text strong{font-size:.9rem;font-weight:800}
+.conn-text span{font-size:.76rem;color:var(--mist)}
+.notice{margin-top:16px;padding:12px 18px;border-radius:16px;background:rgba(241,211,166,.08);border:1px solid rgba(241,211,166,.25);color:var(--honey);font-weight:600}
+
+/* =====================================================================
+   6. QUICK START
+   ===================================================================== */
+.quick{margin-top:18px;padding:10px 10px 12px 18px;border-radius:20px;background:var(--panel);border:1px solid var(--edge);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.qs-top{display:flex;align-items:center;gap:14px;min-width:0}
+.quick h2{font-size:.9rem;font-weight:800;white-space:nowrap}
+.qs-steps{position:relative;display:flex;gap:4px;list-style:none;margin:0;padding:2px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+.qs-steps::-webkit-scrollbar{display:none}
+.qs-step{display:flex;align-items:center;gap:6px;flex:none;padding:4px 10px 4px 4px;border-radius:999px;font-size:.8rem;font-weight:600;color:var(--mist);transition:background .3s,color .3s}
+.qs-num{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:800;background:rgba(255,255,255,.07);transition:background .3s,color .3s}
+.qs-step.done{color:var(--faint)}
+.qs-step.done .qs-num{background:rgba(168,220,196,.9);color:#15261E;font-size:0}
+.qs-step.done .qs-num::after{content:"✓";font-size:.75rem}
+.qs-step.current{background:rgba(198,180,228,.14);color:var(--ink);box-shadow:inset 0 0 0 1px rgba(198,180,228,.38)}
+.qs-step.current .qs-num{background:var(--grad);color:#1E1726}
+@media (min-width:1000px){.qs-steps{flex-wrap:wrap;overflow:visible}}
+.qs-hint{margin:6px 0 0;font-size:.84rem;color:var(--mist)}
+
+/* =====================================================================
+   7. CARDS
+   ===================================================================== */
+.card{position:relative;border-radius:24px;padding:clamp(18px,2.2vw,26px);
+  background:linear-gradient(165deg,rgba(255,255,255,.065),rgba(255,255,255,.018) 65%);border:1px solid var(--edge);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 26px 50px -30px rgba(0,0,0,.75);
+  backdrop-filter:blur(18px) saturate(120%);-webkit-backdrop-filter:blur(18px) saturate(120%)}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+.card h2{font-family:var(--display);font-weight:600;font-size:1.28rem;line-height:1.2;letter-spacing:-.01em;font-variation-settings:"opsz" 36,"SOFT" 100}
+.card-sub{color:var(--mist);font-size:.87rem;margin-top:2px}
+.hint{color:var(--mist);font-size:.85rem}
+
+/* =====================================================================
+   8. HERO — hamster + timer
+   ===================================================================== */
+.hero{border-radius:32px;padding:clamp(18px,3vw,34px);container-type:inline-size;overflow:hidden;
+  transition:--accent .9s ease,--accent-2 .9s ease}
+.hero[data-state=focus]{--accent:#C6B4E4;--accent-2:#E3D6F6}
+.hero[data-state=break]{--accent:#E8B7CB;--accent-2:#F6D8E4}
+.hero[data-state=done]{--accent:#F1D3A6;--accent-2:#FFF0D8}
+.hero[data-state=idle],.hero[data-state=paused]{--accent:#B5ABCB;--accent-2:#D3CBE2}
+.hero::before{content:"";position:absolute;inset:-30%;pointer-events:none;
+  background:radial-gradient(34% 40% at 30% 46%,color-mix(in srgb,var(--accent) 24%,transparent),transparent 72%)}
+.hero-inner{position:relative;display:grid;gap:14px;justify-items:center;text-align:center}
+@container (min-width:600px){
+  .hero-inner{grid-template-columns:minmax(0,1fr) minmax(0,1.02fr);align-items:center;justify-items:stretch;gap:clamp(12px,4cqi,40px)}
+}
+.hero-stage{display:grid;justify-items:center;width:100%}
+.stageWrap{position:relative;width:min(320px,80vw);aspect-ratio:1/1}
+@container (min-width:600px){.stageWrap{width:min(360px,100%)}}
+.orb{position:absolute;inset:8%;border-radius:50%;
+  background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--accent) 30%,transparent),rgba(24,20,30,.72) 72%);
+  box-shadow:inset 0 0 0 1px var(--edge),inset 0 -34px 60px color-mix(in srgb,var(--accent-2) 10%,transparent),0 0 90px color-mix(in srgb,var(--accent) 30%,transparent)}
+.hero[data-state=focus] .orb{animation:breathe 6s ease-in-out infinite}
+@keyframes breathe{50%{box-shadow:inset 0 0 0 1px var(--edge),inset 0 -34px 60px color-mix(in srgb,var(--accent-2) 14%,transparent),0 0 120px color-mix(in srgb,var(--accent) 42%,transparent)}}
+.ringSvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ringTicks{stroke:rgba(255,255,255,.1)}
+.ringTrack{stroke:rgba(255,255,255,.07)}
+.stopA{stop-color:var(--accent)}.stopB{stop-color:var(--accent-2)}
+.ringFill{transition:stroke-dashoffset .35s linear,opacity .5s;filter:drop-shadow(0 0 7px var(--accent))}
+.ringHead{transform-box:view-box;transform-origin:150px 150px;transition:transform .35s linear,opacity .5s}
+.ringHead circle{fill:#fff;filter:drop-shadow(0 0 6px var(--accent)) drop-shadow(0 0 2px #fff)}
+.arch{position:absolute;left:12%;right:12%;bottom:6%;top:4%}
+#buddy{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 18px color-mix(in srgb,var(--accent) 35%,transparent))}
+.buddy-btn{position:absolute;left:22%;right:22%;top:26%;bottom:8%;border-radius:50%;border:0;background:none;cursor:pointer;padding:0}
+.caption{position:relative;margin-top:-4px;max-width:92%;padding:8px 18px;border-radius:999px;background:rgba(38,32,48,.86);
+  border:1px solid var(--edge-2);font-weight:700;font-size:.95rem;text-align:center;box-shadow:0 10px 24px -14px #000}
+.caption::before{content:"";position:absolute;top:-6px;left:50%;width:11px;height:11px;transform:translateX(-50%) rotate(45deg);
+  background:rgba(38,32,48,.95);border-left:1px solid var(--edge-2);border-top:1px solid var(--edge-2)}
+
+/* Hamster parts & animations */
+.ear{transform-box:view-box;transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
+#earL{transform-origin:100px 176px}#earR{transform-origin:200px 176px}
+.twitch #earR{animation:twitch 5s ease-in-out infinite}
+.twitch #earL{animation:twitchL 7.3s ease-in-out infinite}
+@keyframes twitch{0%,86%,100%{transform:rotate(0)}90%{transform:rotate(14deg)}94%{transform:rotate(-4deg)}}
+@keyframes twitchL{0%,90%,100%{transform:rotate(0)}93%{transform:rotate(-12deg)}96%{transform:rotate(3deg)}}
+.party #earL{animation:wiggleL .45s ease-in-out infinite}.party #earR{animation:wiggleR .45s ease-in-out infinite}
+@keyframes wiggleL{50%{transform:rotate(-12deg)}}@keyframes wiggleR{50%{transform:rotate(12deg)}}
+.bob{animation:bob 3.4s ease-in-out infinite;transform-origin:150px 300px}
+.bounce .bob{animation:bounce .5s ease-in-out infinite}
+.hop .bob{animation:hop .55s cubic-bezier(.3,1.6,.5,1) infinite}
+.sleeping .bob{animation:breathSleep 4.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+@keyframes bounce{50%{transform:translateY(-10px)}}
+@keyframes hop{0%,100%{transform:translateY(0) scale(1,1)}20%{transform:translateY(2px) scale(1.04,.95)}55%{transform:translateY(-14px) scale(.97,1.04)}}
+@keyframes breathSleep{50%{transform:scale(1.015,.985)}}
+.zz text{font-family:var(--font);font-weight:800;fill:var(--lilac);opacity:0}
+.sleeping .zz text{animation:zfloat 3s linear infinite}
+.sleeping .zz text:nth-child(2){animation-delay:1s}.sleeping .zz text:nth-child(3){animation-delay:2s}
+@keyframes zfloat{0%{opacity:0;transform:translate(0,0)}20%{opacity:1}100%{opacity:0;transform:translate(14px,-50px)}}
+.spark{opacity:0;transform-box:fill-box;transform-origin:center}
+.party .spark{animation:pop 1.3s ease-out infinite}
+.party .spark:nth-child(2){animation-delay:.35s}.party .spark:nth-child(3){animation-delay:.7s}.party .spark:nth-child(4){animation-delay:1s}
+@keyframes pop{0%{opacity:0;transform:scale(.3)}30%{opacity:1;transform:scale(1.1)}100%{opacity:0;transform:scale(.8) translateY(-12px)}}
+.tear{animation:drip 1.8s ease-in infinite}
+@keyframes drip{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(22px);opacity:0}}
+
+/* Timer column */
+.hero-timer{display:grid;gap:6px;justify-items:center;min-width:0;width:100%}
+.state-pill{display:inline-flex;align-items:center;gap:8px;padding:5px 13px 5px 10px;border-radius:999px;
+  background:color-mix(in srgb,var(--accent) 15%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 42%,transparent);
+  font-weight:800;font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;color:var(--accent-2)}
+.state-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+.hero[data-state=focus] .state-dot,.hero[data-state=break] .state-dot{animation:pulse 1.8s ease-in-out infinite}
+.state-line{font-family:var(--display);font-weight:500;font-size:clamp(1.25rem,3.6cqi,1.6rem);line-height:1.2;margin-top:6px;font-variation-settings:"opsz" 36,"SOFT" 100}
+.time{display:flex;justify-content:center;font-family:var(--display);font-weight:300;font-size:clamp(3.6rem,14cqi,6.3rem);line-height:1;letter-spacing:-.02em;margin:4px 0 2px;
+  font-variation-settings:"opsz" 144,"SOFT" 100;color:var(--ink);text-shadow:0 0 44px color-mix(in srgb,var(--accent) 50%,transparent);transition:opacity .5s,color .6s}
+.time .d{display:inline-block;width:.6em;text-align:center}
+.time .c{display:inline-block;width:.28em;text-align:center;transform:translateY(-.06em);opacity:.7}
+.time.is-preview{opacity:.38;text-shadow:none}
+.hero[data-state=done] .time{color:var(--honey)}
+.what{color:var(--mist);font-size:.95rem;min-height:1.5em}
+.now-task{display:flex;align-items:center;gap:12px;width:100%;max-width:400px;margin-top:12px;padding:12px 12px 12px 14px;border-radius:18px;
+  background:rgba(255,255,255,.045);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--edge));text-align:left;transition:border-color .6s}
+.nt-icon{width:38px;height:38px;flex:none;border-radius:12px;display:grid;place-items:center;color:var(--accent-2);background:color-mix(in srgb,var(--accent) 20%,transparent)}
+.nt-body{display:grid;min-width:0;flex:1;line-height:1.3}
+.nt-label{font-size:.74rem;color:var(--mist);font-weight:700}
+.nt-name{font-weight:800;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.nt-time{font-size:.8rem;color:var(--mist)}
+.now-task.is-empty{border-style:dashed;border-color:var(--edge-2)}
+.now-task.is-empty .nt-name{color:var(--mist);font-weight:700}
+.hero-meta{display:flex;gap:26px;margin:14px 0 0;padding:0}
+.hero-meta div{display:grid}
+.hero-meta dt{font-size:.74rem;color:var(--mist);font-weight:700}
+.hero-meta dd{margin:0;font-weight:800;font-size:1.02rem}
+
+/* =====================================================================
+   9. TASKS
+   ===================================================================== */
+.tasks{display:flex;flex-direction:column}
+.todo-add{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}
+.pri-pick{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:6px;border:0;padding:0;margin:2px 0 0;min-width:0}
+.pri-pick legend{float:left;font-size:.8rem;color:var(--mist);font-weight:700;margin-right:6px;padding:0}
+.pri-opt{position:relative;cursor:pointer}
+.pri-opt input{position:absolute;opacity:0;width:1px;height:1px}
+.pri-opt span{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px 0 10px;border-radius:999px;font-size:.8rem;font-weight:700;color:var(--mist);
+  box-shadow:inset 0 0 0 1px var(--edge);transition:background .2s,color .2s,box-shadow .2s}
+.pri-opt:hover span{color:var(--ink)}
+.pri-opt input:checked+span{color:var(--ink);background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px var(--edge-2)}
+.pri-opt input:focus-visible+span{outline:2px solid var(--lilac);outline-offset:2px}
+.pdot{width:8px;height:8px;border-radius:50%;flex:none;background:var(--pc)}
+.high{--pc:#F2A7B5}.med{--pc:#F1D3A6}.low{--pc:#A9C3E6}
+.task-scroll{margin-top:16px;flex:1;min-height:0}
+@media (min-width:1100px){.task-scroll{max-height:470px;overflow-y:auto;margin-right:-10px;padding-right:10px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent}}
+.task-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.task{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:10px 12px;padding:11px 8px 11px 16px;border-radius:16px;
+  background:rgba(255,255,255,.035);border:1px solid transparent;transition:background .2s,border-color .3s,box-shadow .3s}
+.task::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--pc)}
+.task:hover{background:rgba(255,255,255,.06)}
+.task.pri-high{--pc:#F2A7B5}.task.pri-med{--pc:#F1D3A6}.task.pri-low{--pc:#A9C3E6}
+.task.doing{background:linear-gradient(100deg,rgba(198,180,228,.2),rgba(198,180,228,.05));border-color:rgba(198,180,228,.42);box-shadow:0 12px 30px -20px rgba(198,180,228,.9)}
+.task.enter{animation:taskIn .4s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes taskIn{from{opacity:0;transform:translateY(-6px) scale(.98)}}
+.check{appearance:none;-webkit-appearance:none;width:24px;height:24px;margin:0;flex:none;border-radius:8px;cursor:pointer;display:grid;place-content:center;
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1.6px var(--mist);transition:background .2s,box-shadow .2s,transform .2s}
+.check:hover{box-shadow:inset 0 0 0 1.6px var(--lilac)}
+.check:checked{background:var(--grad);box-shadow:0 0 14px rgba(198,180,228,.55)}
+.check:checked::after{content:"";width:10px;height:6px;border:2.4px solid #1E1726;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.tbody{min-width:0}
+.ttext{font-weight:700;overflow-wrap:anywhere}
+.ttext span{background:linear-gradient(currentColor,currentColor) no-repeat 0 58%/0% 1.6px;transition:background-size .35s ease,color .35s}
+.task.done .ttext span,.task.completing .ttext span{background-size:100% 1.6px;color:var(--faint)}
+.tmeta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:3px;font-size:.78rem;color:var(--mist)}
+.pri-tag{display:inline-flex;align-items:center;gap:5px;min-height:24px;padding:0 9px 0 7px;border-radius:999px;border:0;background:none;cursor:pointer;font-size:.76rem;font-weight:700;color:var(--mist);box-shadow:inset 0 0 0 1px var(--edge)}
+.pri-tag:hover{color:var(--ink);box-shadow:inset 0 0 0 1px var(--edge-2)}
+.tmins{display:inline-flex;align-items:center;gap:4px}
+.now-badge{color:var(--lilac);font-weight:800}
+.start-btn{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 14px;border-radius:999px;border:0;cursor:pointer;font-weight:800;font-size:.8rem;
+  background:rgba(255,255,255,.07);color:var(--ink);box-shadow:inset 0 0 0 1px var(--edge-2);transition:background .2s,box-shadow .2s,transform .15s}
+.start-btn:hover{box-shadow:inset 0 0 0 1px var(--lilac)}
+.start-btn:active{transform:scale(.96)}
+.start-btn[aria-pressed=true]{background:var(--grad);color:#1E1726;box-shadow:0 8px 18px -8px rgba(198,180,228,.9)}
+.eq{display:inline-flex;align-items:flex-end;gap:2px;height:11px}
+.eq i{width:2.5px;border-radius:2px;background:currentColor;animation:eq 1s ease-in-out infinite}
+.eq i:nth-child(1){height:5px}.eq i:nth-child(2){height:11px;animation-delay:.2s}.eq i:nth-child(3){height:7px;animation-delay:.4s}
+@keyframes eq{50%{transform:scaleY(.45)}}
+.eq i{transform-origin:bottom}
+.task.completing{animation:taskDone .5s .12s ease forwards}
+.task.completing .check{animation:checkPop .4s cubic-bezier(.3,1.6,.5,1)}
+@keyframes checkPop{50%{transform:scale(1.28)}}
+@keyframes taskDone{to{opacity:.4;transform:translateX(8px)}}
+.task.removing{animation:taskRemove .24s ease forwards}
+@keyframes taskRemove{to{opacity:0;transform:scale(.96)}}
+.done-list .task{background:rgba(255,255,255,.02)}
+.done-list .task::before{opacity:.35}
+.list-head{font-size:.8rem;font-weight:800;color:var(--mist);margin:18px 0 8px 2px}
+.empty{display:flex;align-items:center;gap:12px;padding:18px;border-radius:16px;border:1px dashed var(--edge-2);color:var(--mist)}
+.empty span{font-size:1.5rem}
+.all-done{padding:14px 16px;border-radius:16px;background:rgba(241,211,166,.08);border:1px solid rgba(241,211,166,.25);color:var(--honey);font-weight:700}
+.carry{margin-top:14px;align-self:flex-start}
+
+/* =====================================================================
+   10. PROGRESS / STATS
+   ===================================================================== */
+.stats-top{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr);gap:18px 26px;align-items:end}
+.today-total{display:grid}
+.big{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,4.6vw,3rem);line-height:1.02;letter-spacing:-.02em;font-variation-settings:"opsz" 144,"SOFT" 100}
+.big-sub{color:var(--mist);font-size:.88rem;margin-top:4px}
+.goal-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:2px 10px;font-size:.84rem;color:var(--mist)}
+.goal-pct{font-weight:800;color:var(--ink);font-size:1.12rem;margin-right:4px}
+.goal-track{position:relative;height:12px;margin-top:10px;border-radius:999px;background:rgba(255,255,255,.07);box-shadow:inset 0 1px 3px rgba(0,0,0,.45)}
+.goal-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:inherit;
+  background:linear-gradient(90deg,#8E78B8,#C6B4E4 60%,#E8B7CB);box-shadow:0 0 16px rgba(198,180,228,.45);transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.goal-fill::after{content:"";position:absolute;right:-3px;top:50%;width:16px;height:16px;margin-top:-8px;border-radius:50%;background:#fff;
+  box-shadow:0 0 0 4px rgba(198,180,228,.3),0 0 14px rgba(255,255,255,.8)}
+.goal-fill.zero::after{display:none}
+.stats.goal-met .goal-fill{background:linear-gradient(90deg,#D9A877,#F1D3A6 45%,#FFF1D6 60%,#F1D3A6 75%);background-size:200% 100%;
+  box-shadow:0 0 20px rgba(241,211,166,.55);animation:shimmer 3.5s linear infinite}
+.stats.goal-met .goal-fill::after{box-shadow:0 0 0 4px rgba(241,211,166,.35),0 0 16px #FFF1D6}
+.stats.goal-met .goal-pct{color:var(--honey)}
+@keyframes shimmer{to{background-position:-200% 0}}
+.mood{display:flex;align-items:center;gap:10px;margin-top:18px;padding:11px 14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--edge);font-weight:700}
+.stats.goal-met .mood{background:rgba(241,211,166,.08);border-color:rgba(241,211,166,.3);color:var(--honey)}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;margin:14px 0 22px;padding:0}
+.metric{padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid var(--edge);min-width:0}
+.metric dt{font-size:.76rem;color:var(--mist);font-weight:700}
+.metric dd{margin:2px 0 0;font-weight:800;font-size:1.1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.metric small{display:block;font-size:.75rem;color:var(--mist);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chart-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:12px}
+.chart-head h3{font-size:.95rem;font-weight:800}
+.chart-head span{font-size:.8rem;color:var(--mist)}
+.plot{position:relative;height:150px;border-bottom:1px solid var(--edge)}
+.bars{position:absolute;inset:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:clamp(6px,1.4vw,12px)}
+.bcol{position:relative;display:flex;align-items:flex-end;justify-content:center;height:100%}
+.bar{width:min(100%,34px);min-height:3px;border-radius:10px 10px 4px 4px;background:linear-gradient(180deg,rgba(198,180,228,.55),rgba(142,120,184,.2));transition:height .8s cubic-bezier(.2,.8,.2,1)}
+.bcol.now .bar{background:linear-gradient(180deg,#E8B7CB,#C6B4E4 55%,#8E78B8);box-shadow:0 0 22px -4px rgba(198,180,228,.75)}
+.bcol.met .bar{background:linear-gradient(180deg,#FFF1D6,#F1D3A6 50%,#C99468)}
+.bcol.met.now .bar{box-shadow:0 0 22px -4px rgba(241,211,166,.8)}
+.bval{position:absolute;left:50%;transform:translateX(-50%);font-size:.7rem;font-weight:700;color:var(--mist);white-space:nowrap}
+.bcol.now .bval{color:var(--ink)}
+.bcol.met .bval::before{content:"✦ ";color:var(--honey)}
+.goal-line{position:absolute;left:0;right:0;height:0;border-top:1.5px dashed rgba(241,211,166,.45);pointer-events:none;z-index:1;transition:bottom .6s}
+.goal-line span{position:absolute;right:0;bottom:3px;font-size:.66rem;font-weight:800;color:rgba(241,211,166,.8)}
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:clamp(6px,1.4vw,12px);margin-top:8px;text-align:center;font-size:.74rem;color:var(--mist)}
+.days .now{color:var(--ink);font-weight:800}
+
+/* =====================================================================
+   11. SETTINGS
+   ===================================================================== */
+.set-group{padding:16px 0;border-top:1px solid var(--edge)}
+.set-group:first-of-type{border-top:0;padding-top:0}
+.set-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+.set-head h3{font-size:1rem;font-weight:800}
+.set-value{font-weight:800;font-size:.88rem;color:var(--lilac)}
+.seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:4px;border-radius:16px;background:rgba(10,8,14,.3);border:1px solid var(--edge)}
+.seg.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.opt{min-height:42px;border:0;border-radius:12px;background:none;color:var(--mist);font-weight:800;font-size:1rem;cursor:pointer;display:inline-flex;align-items:baseline;justify-content:center;gap:3px;transition:background .2s,color .2s,box-shadow .2s}
+.opt small{font-size:.7rem;font-weight:700;opacity:.8}
+.opt:hover:not(:disabled){color:var(--ink);background:rgba(255,255,255,.06)}
+.opt[aria-pressed=true]{background:var(--grad);color:#1E1726;box-shadow:0 8px 18px -8px rgba(198,180,228,.9)}
+.opt:disabled{cursor:not-allowed;opacity:.5}
+.custom{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:10px;padding:7px 8px 7px 12px;border-radius:14px;border:1px dashed transparent;font-size:.86rem;color:var(--mist);transition:background .3s,border-color .3s}
+.custom>span:first-child{font-weight:700;margin-right:2px}
+.custom .btn{margin-left:auto}
+.custom.is-active{border-color:rgba(198,180,228,.55);background:rgba(198,180,228,.08);color:var(--ink)}
+.goal-set{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:.86rem;color:var(--mist)}
+.goal-set .btn{margin-left:auto}
+.stepper{display:inline-flex;align-items:center;gap:2px;padding:3px;border-radius:14px;background:rgba(10,8,14,.3);border:1px solid var(--edge)}
+.stepper button{width:38px;height:38px;border:0;border-radius:11px;background:none;color:var(--ink);font-size:1.2rem;font-weight:700;cursor:pointer}
+.stepper button:hover{background:rgba(255,255,255,.07)}
+.stepper .num{border-color:transparent;background:none}
+.settings .hint{margin-top:4px}
+
+/* =====================================================================
+   12. LAMP NOTE
+   ===================================================================== */
+.note-card{container-type:inline-size}
+.note-grid{display:grid;gap:22px}
+@container (min-width:720px){.note-grid{grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:34px;align-items:center}}
+.lamp{display:grid;justify-items:center;gap:0}
+.lamp-screen{position:relative;width:100%;max-width:300px;aspect-ratio:2/1;display:grid;place-items:center;padding:14px;border-radius:14px;overflow:hidden;
+  background:radial-gradient(circle at 50% 40%,#0D0C14,#050408);border:7px solid #2B2535;
+  box-shadow:0 0 0 1px rgba(255,255,255,.07),0 22px 40px -20px #000,inset 0 0 26px rgba(150,180,255,.05)}
+.lamp-screen::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px)}
+.lamp-text{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:clamp(.95rem,4.6vw,1.12rem);font-weight:600;text-align:center;line-height:1.4;overflow-wrap:anywhere;
+  color:#DDE9FF;text-shadow:0 0 8px rgba(160,200,255,.65)}
+.lamp-screen.is-empty .lamp-text{opacity:.3;text-shadow:none;font-weight:400}
+.lamp-screen.flash{animation:screenFlash 1s ease}
+@keyframes screenFlash{0%{box-shadow:0 0 0 1px rgba(255,255,255,.07),0 0 0 rgba(198,180,228,0)}30%{box-shadow:0 0 0 1px rgba(198,180,228,.6),0 0 50px rgba(198,180,228,.55)}}
+.lamp-screen-tag{position:absolute;top:6px;right:8px;font-size:.62rem;font-weight:800;color:rgba(168,220,196,.85);font-family:var(--font)}
+.lamp-neck{width:26%;height:14px;background:linear-gradient(#2B2535,#221D2A);border-radius:0 0 6px 6px}
+.lamp-foot{width:52%;height:10px;background:linear-gradient(#2B2535,#1E1A25);border-radius:10px 10px 4px 4px;margin-bottom:14px;box-shadow:0 14px 20px -12px #000}
+.fit{width:100%;max-width:300px}
+.fit-track{height:5px;border-radius:5px;background:rgba(255,255,255,.07);overflow:hidden}
+.fit-track span{display:block;height:100%;width:0;border-radius:inherit;background:var(--mint);transition:width .25s,background .25s}
+.fit.over .fit-track span{background:var(--honey)}
+.fit p{font-size:.78rem;color:var(--mist);margin-top:6px;text-align:center}
+.msg-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}
+.msg-status{min-height:1.4em;margin-top:8px;font-size:.84rem;font-weight:800;transition:opacity .3s}
+.msg-status.ok{color:var(--mint)}.msg-status.err{color:var(--danger)}.msg-status.pending{color:var(--honey)}
+.emojis{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
+.emo{width:44px;height:44px;border:0;border-radius:14px;font-size:1.25rem;line-height:1;cursor:pointer;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px var(--edge);transition:transform .18s,background .2s,box-shadow .2s}
+.emo:hover{transform:translateY(-2px);background:rgba(198,180,228,.14);box-shadow:inset 0 0 0 1px var(--lilac)}
+.emo:active{transform:scale(.92)}
+.quick-msgs{display:flex;flex-wrap:wrap;gap:8px}
+.qchip{min-height:40px;padding:0 15px;border:0;border-radius:999px;cursor:pointer;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px var(--edge-2);font-weight:700;font-size:.85rem;transition:background .2s,box-shadow .2s,transform .15s}
+.qchip:hover:not(:disabled){background:rgba(198,180,228,.12);box-shadow:inset 0 0 0 1px var(--lilac)}
+.qchip:active:not(:disabled){transform:scale(.96)}
+.qchip:disabled{opacity:.4;cursor:not-allowed}
+.note-foot{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:18px;padding-top:16px;border-top:1px solid var(--edge)}
+
+/* =====================================================================
+   13. HELP, FOOTER, TOASTS, FX
+   ===================================================================== */
+.help{margin-top:clamp(14px,1.6vw,22px);padding:0;border-radius:20px}
+.help summary{cursor:pointer;list-style:none;padding:16px 22px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:10px;border-radius:20px}
+.help summary::-webkit-details-marker{display:none}
+.help summary::after{content:"+";font-size:1.3rem;color:var(--mist);transition:transform .25s}
+.help[open] summary::after{transform:rotate(45deg)}
+.help-body{padding:0 22px 18px;color:var(--mist)}
+.help ol{margin:0 0 10px;padding-left:22px}
+.help li{margin-bottom:6px}
+.help b{color:var(--ink)}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 16px;margin-top:18px;padding:0 4px;font-size:.82rem;color:var(--faint)}
+.toasts{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:70;display:grid;gap:8px;width:min(440px,calc(100vw - 28px));pointer-events:none}
+.toast{pointer-events:auto;display:flex;align-items:center;gap:12px;padding:11px 12px 11px 14px;border-radius:16px;background:rgba(34,29,42,.94);border:1px solid var(--edge-2);
+  box-shadow:0 20px 40px -18px rgba(0,0,0,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);font-weight:700;font-size:.9rem;animation:toastIn .38s cubic-bezier(.2,.9,.3,1.2)}
+.toast-ic{width:24px;height:24px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:.78rem;font-weight:800;background:rgba(198,180,228,.2);color:var(--lilac)}
+.toast.ok .toast-ic{background:rgba(168,220,196,.2);color:var(--mint)}
+.toast.warn .toast-ic,.toast.err .toast-ic{background:rgba(242,163,170,.18);color:var(--danger)}
+.toast-tx{flex:1}
+.toast-act{border:0;background:rgba(255,255,255,.08);color:var(--ink);font-weight:800;font-size:.82rem;padding:7px 12px;border-radius:10px;cursor:pointer}
+.toast.out{animation:toastOut .26s ease forwards}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px) scale(.97)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(8px)}}
+.fx{position:fixed;inset:0;pointer-events:none;z-index:80;overflow:hidden}
+.fx .p{position:absolute;transform:translate(-50%,-50%);animation:fxp 900ms cubic-bezier(.15,.7,.3,1) forwards;will-change:transform,opacity;font-weight:800;line-height:1}
+@keyframes fxp{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}15%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1) rotate(var(--r))}}
+.fly{position:absolute;left:0;top:0;font-size:24px;will-change:transform}
+
+/* =====================================================================
+   14. RESPONSIVE
+   ===================================================================== */
+@media (max-width:767px){
+  .conn{width:100%;justify-content:space-between}
+  .conn-text{flex:1}
+}
+@media (max-width:560px){
+  .qs-top{flex-wrap:wrap;gap:6px}
+  .qs-top h2{flex:1}
+  .qs-steps{order:3;flex-basis:100%}
+  .stats-top{grid-template-columns:1fr}
+  .task{grid-template-columns:auto minmax(0,1fr) auto;padding-right:6px}
+  .task .check{grid-row:1/3;align-self:start;margin-top:2px}
+  .task .tbody{grid-column:2}
+  .task .start-btn{grid-column:2;grid-row:2;justify-self:start}
+  .task .del{grid-column:3;grid-row:1}
+  .todo-add{grid-template-columns:1fr}
+  .todo-add .btn{width:100%}
+  .custom .btn,.goal-set .btn{margin-left:0}
+}
+@media (max-width:400px){
+  .app{padding-left:12px;padding-right:12px}
+  .logo{width:44px;height:44px;border-radius:15px}
+  .opt{font-size:.92rem}
+  .opt small{display:none}
+  .hero-meta{gap:18px}
+}
+
+/* =====================================================================
+   15. REDUCED MOTION
+   ===================================================================== */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
+
+/* =====================================================================
+   16. NOTEBOOK
+   ===================================================================== */
+.notebook{container-type:inline-size}
+.nb-grid{display:grid;gap:16px}
+@container (min-width:720px){.nb-grid{grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:22px;align-items:start}}
+.nb-side{display:grid;gap:10px;align-content:start}
+.nb-list{list-style:none;margin:0;padding:0 2px 2px 0;display:grid;gap:6px;max-height:460px;overflow:auto}
+.nb-item{width:100%;text-align:left;border:0;cursor:pointer;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.035);color:var(--ink);
+  display:grid;gap:1px;box-shadow:inset 0 0 0 1px transparent;transition:background .2s,box-shadow .2s}
+.nb-item:hover{background:rgba(255,255,255,.06)}
+.nb-item[aria-current=true]{background:linear-gradient(100deg,rgba(198,180,228,.2),rgba(198,180,228,.05));box-shadow:inset 0 0 0 1px rgba(198,180,228,.42)}
+.nb-item b{font-weight:800;font-size:.92rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nb-item span{display:flex;gap:8px;font-size:.78rem;color:var(--mist);min-width:0}
+.nb-item time{flex:none;color:var(--lilac)}
+.nb-item em{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nb-nomatch{font-size:.85rem;color:var(--mist);padding:6px 4px}
+.nb-paper{--lh:34px;--margin:56px;position:relative;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;
+  background:#211B2A;border:1px solid var(--edge-2);box-shadow:0 22px 40px -26px #000;transition:border-color .2s,box-shadow .2s}
+.nb-paper::before{content:"";position:absolute;top:0;bottom:0;left:calc(var(--margin) - 14px);width:1.5px;background:rgba(232,183,203,.4);pointer-events:none}
+.nb-paper:focus-within{border-color:rgba(198,180,228,.6);box-shadow:0 0 0 4px rgba(198,180,228,.1),0 22px 40px -26px #000}
+.nb-title-in{width:100%;border:0;background:none;color:var(--ink);font-family:var(--display);font-weight:600;font-size:1.3rem;letter-spacing:-.01em;
+  font-variation-settings:"opsz" 36,"SOFT" 100;padding:18px 20px 12px var(--margin);border-bottom:1.5px solid rgba(198,180,228,.3)}
+.nb-body{display:block;width:100%;min-height:calc(var(--lh) * 11);resize:vertical;border:0;color:var(--ink);
+  font-family:"Caveat",var(--font);font-weight:500;font-size:1.5rem;line-height:var(--lh);padding:0 20px 0 var(--margin);
+  background:linear-gradient(transparent calc(var(--lh) - 1px),rgba(198,180,228,.15) calc(var(--lh) - 1px)) 0 0/100% var(--lh) local}
+.nb-title-in:focus-visible,.nb-body:focus-visible{outline:none}
+.nb-title-in::placeholder,.nb-body::placeholder{color:var(--faint)}
+.nb-foot{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 14px 12px var(--margin);border-top:1px solid var(--edge);font-size:.8rem;color:var(--mist)}
+.nb-foot .grow{flex:1}
+@media (max-width:520px){.nb-paper{--margin:40px}.nb-body{font-size:1.35rem}}
+
+/* =====================================================================
+   17. STUDY BUDDY (AI)
+   ===================================================================== */
+.buddy-ai{display:flex;flex-direction:column;gap:14px}
+.ai-chips{display:flex;flex-wrap:wrap;gap:8px}
+.ai-chip{min-height:38px;padding:0 14px;border-radius:999px;border:0;cursor:pointer;font-weight:700;font-size:.84rem;color:var(--ink);
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px var(--edge-2);transition:background .2s,box-shadow .2s,transform .15s}
+.ai-chip:hover{background:rgba(198,180,228,.12);box-shadow:inset 0 0 0 1px var(--lilac)}
+.ai-chip:active{transform:scale(.97)}
+.ai-chip:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.ai-log{display:flex;flex-direction:column;gap:12px;max-height:520px;min-height:120px;overflow:auto;padding:4px 2px}
+.ai-msg{max-width:min(680px,88%);padding:12px 16px;border-radius:18px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;font-size:.95rem}
+.ai-msg.me{align-self:flex-end;background:linear-gradient(135deg,rgba(216,202,240,.22),rgba(235,194,212,.16));border:1px solid rgba(198,180,228,.35);border-bottom-right-radius:6px}
+.ai-msg.bot{align-self:flex-start;background:rgba(255,255,255,.045);border:1px solid var(--edge);border-bottom-left-radius:6px}
+.ai-msg.err{border-color:rgba(242,163,170,.45);color:var(--danger)}
+.ai-msg.thinking{color:var(--mist);font-style:italic}
+.ai-msg-tools{display:flex;gap:6px;margin-top:10px;white-space:normal}
+.ai-msg-tools button{border:0;background:none;color:var(--lilac);font-weight:700;font-size:.8rem;cursor:pointer;padding:4px 2px;text-decoration:underline;text-underline-offset:3px}
+.ai-hello{color:var(--mist);font-size:.92rem;padding:14px 16px;border-radius:16px;border:1px dashed var(--edge-2)}
+.ai-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}
+.ai-input{resize:none;min-height:46px;max-height:160px;line-height:1.45;font-family:var(--font)}
+.ai-setup{display:grid;gap:12px;padding:16px;border-radius:18px;background:rgba(241,211,166,.06);border:1px solid rgba(241,211,166,.22)}
+.ai-setup p{font-size:.9rem;color:var(--mist)}
+.ai-setup b{color:var(--ink)}
+.ai-setup a{color:var(--lilac)}
+.ai-foot{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:.8rem;color:var(--faint)}
+
+/* =====================================================================
+   18. MISSION, FOCUS SCORE, FOCUS MODE
+   ===================================================================== */
+.mission-card{position:relative;overflow:hidden}.mission-top{display:flex;gap:16px;justify-content:space-between;align-items:flex-start}.mission-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--lilac);font-weight:800}.mission-title{margin:5px 0 4px;font:600 27px/1.05 var(--display)}.mission-sub{margin:0;color:var(--mist);font-size:13px}.mission-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.mission-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:14px;margin-top:18px}.mission-panel{background:rgba(255,255,255,.035);border:1px solid var(--edge);border-radius:18px;padding:15px}.mission-progress{height:9px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden;margin:10px 0}.mission-progress span{display:block;height:100%;width:0;background:var(--grad);border-radius:inherit;transition:width .5s ease}.mission-stat{display:flex;align-items:end;justify-content:space-between;gap:12px}.mission-big{font:600 30px/1 var(--display)}.mission-small{color:var(--faint);font-size:12px}.mission-task{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--edge)}.mission-task:last-child{border-bottom:0}.mission-task .dot{width:9px;height:9px;border-radius:50%;background:var(--lilac);box-shadow:0 0 0 4px rgba(198,180,228,.09)}.mission-task.done{opacity:.55;text-decoration:line-through}.mission-task .grow{flex:1}.score-ring{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--lilac) 0deg,rgba(255,255,255,.08) 0deg);position:relative}.score-ring:after{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--bg-2)}.score-ring b{position:relative;z-index:1;font:700 21px/1 var(--display)}.streak-row{display:flex;align-items:center;gap:12px}.streak-fire{font-size:28px}.focus-mode{--panel:transparent}.focus-mode .topbar,.focus-mode .notice,.focus-mode .quick,.focus-mode .tasks,.focus-mode #stats,.focus-mode .settings,.focus-mode #mission,.focus-mode #library,.focus-mode .note-card,.focus-mode .notebook,.focus-mode .buddy-ai,.focus-mode .help,.focus-mode .foot{display:none!important}.focus-mode .layout{display:block;max-width:820px;margin:auto}.focus-mode #hero{min-height:78vh;display:grid;place-items:center}.focus-mode .hero-meta{opacity:.7}.focus-exit{display:none!important}.focus-mode .focus-exit{display:inline-flex!important;position:fixed;top:16px;right:16px;z-index:60}.empty-mission{color:var(--faint);font-size:13px;padding:8px 0}.score-note{margin-top:8px;color:var(--faint);font-size:12px}.v2-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:99px;background:rgba(198,180,228,.08);border:1px solid var(--edge);font-size:11px;color:var(--mist)}
+@media(max-width:760px){.mission-grid{grid-template-columns:1fr}.mission-top{flex-direction:column}.mission-actions{justify-content:flex-start}}
+
+
+/* =====================================================================
+   19. COURSE LIBRARY
+   ===================================================================== */
+.library-grid{display:grid;grid-template-columns:minmax(280px,.85fr) minmax(320px,1.15fr);gap:18px}.library-upload,.library-courses{padding:18px;border:1px solid var(--edge);border-radius:18px;background:rgba(255,255,255,.025)}.upload-icon{font-size:30px;margin-bottom:6px}.library-upload h3{font-family:var(--display);font-size:22px;margin-bottom:5px}.field-label{display:block;font-size:12px;color:var(--mist);margin:15px 0 6px}.upload-drop{margin-top:10px;min-height:100px;border:1px dashed var(--edge-2);border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,.02);transition:.2s}.upload-drop:hover,.upload-drop.drag{border-color:var(--lilac);background:rgba(198,180,228,.05)}
+.upload-drop.has-files{border-style:solid;border-color:rgba(160,214,180,.5)}
+.upload-drop .upload-sub{max-width:92%;text-align:center;overflow-wrap:anywhere}.upload-drop input{display:none}.upload-main{font-weight:800}.upload-sub{font-size:12px;color:var(--faint);margin-top:2px}.upload-progress{min-height:20px;margin-top:9px;color:var(--mist);font-size:12px}.library-status{font-size:11px;padding:5px 9px;border-radius:99px;border:1px solid var(--edge);color:var(--faint)}.library-status.online{color:var(--mint);border-color:rgba(168,220,196,.3);background:rgba(168,220,196,.06)}.library-section-title{display:flex;justify-content:space-between;color:var(--mist);font-size:12px;margin-bottom:9px}.course-list{display:grid;gap:8px}.course-item{width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--edge);background:rgba(255,255,255,.025);padding:11px 12px;border-radius:14px;cursor:pointer}.course-item:hover,.course-item.active{border-color:rgba(198,180,228,.45);background:rgba(198,180,228,.08)}.course-icon{font-size:22px}.course-item small{display:block;color:var(--faint);margin-top:2px}.course-check{color:var(--mint);font-weight:800}.empty-library{text-align:center;padding:32px 15px;color:var(--faint)}.empty-library span{font-size:28px}.library-tools{margin-top:14px;padding:14px 16px;border-radius:16px;border:1px solid var(--edge);background:rgba(198,180,228,.045);display:flex;align-items:center;justify-content:space-between;gap:14px}.eyebrow{display:block;color:var(--faint);font-size:9px;letter-spacing:.12em;margin-bottom:3px}.library-actions{display:flex;gap:7px;flex-wrap:wrap}.ai-setup{padding:14px 0 2px}.ai-connection-box{display:flex;align-items:center;gap:9px;padding:11px 13px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--edge);margin:12px 0}.status-dot{width:8px;height:8px;border-radius:50%;background:var(--danger);box-shadow:0 0 0 4px rgba(242,163,170,.08)}.status-dot.online{background:var(--mint);box-shadow:0 0 0 4px rgba(168,220,196,.08)}
+@media(max-width:760px){.library-grid{grid-template-columns:1fr}.library-tools{align-items:flex-start;flex-direction:column}.library-actions{width:100%}}
+
+/* Demo mode */
+.demo-bar{display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px;margin-top:16px;padding:10px 12px 10px 16px;border-radius:18px;background:rgba(241,211,166,.08);border:1px solid rgba(241,211,166,.28)}
+.demo-bar p{flex:1;min-width:200px;font-size:.88rem;color:var(--mist)}
+.demo-bar b{color:var(--ink)}
+.demo-tag{font-size:.72rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--honey)}
+#demoSit[aria-pressed=true]{background:var(--panel-2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--edge-2)}
+.conn[data-state=demo]{border-color:rgba(241,211,166,.3)}
+.conn[data-state=demo] .conn-dot{background:var(--honey);box-shadow:0 0 0 4px rgba(241,211,166,.14)}
+/* Quiz + weak spots */
+.quiz-bar{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;margin-top:14px;padding:10px 14px;border-radius:16px;background:rgba(198,180,228,.08);border:1px solid rgba(198,180,228,.25);font-size:.88rem}
+.quiz-tag{font-size:.72rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--lilac)}
+.quiz-weak{flex:1;color:var(--honey);font-weight:700}
+.ai-msg.good{border-color:rgba(160,214,180,.45)}
+.ai-msg.bad{border-color:rgba(241,211,166,.45)}
+.practice-note{color:var(--honey);font-weight:700}
+</style>
+</head>
+<body>
+<div class="sky" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="stars"></div></div>
+<a class="skip" href="#main">Skip to the timer</a>
+
+<div class="app">
+  <!-- ============ Header ============ -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 48 48"><circle cx="12" cy="15" r="7" fill="#EFD6BD"/><circle cx="12" cy="15" r="4" fill="#F2BFCB"/><circle cx="36" cy="15" r="7" fill="#EFD6BD"/><circle cx="36" cy="15" r="4" fill="#F2BFCB"/><ellipse cx="24" cy="28" rx="17" ry="15" fill="#EFD6BD"/><ellipse cx="24" cy="34" rx="10" ry="7.5" fill="#FFF8F1"/><circle cx="18" cy="26" r="2.5" fill="#3F3547"/><circle cx="30" cy="26" r="2.5" fill="#3F3547"/><circle cx="18.8" cy="25.2" r=".9" fill="#fff"/><circle cx="30.8" cy="25.2" r=".9" fill="#fff"/><ellipse cx="13.5" cy="31" rx="3" ry="2" fill="#F7C9D3"/><ellipse cx="34.5" cy="31" rx="3" ry="2" fill="#F7C9D3"/><path d="M22.4 30.4 Q24 29.2 25.6 30.4 Q24 32.2 22.4 30.4Z" fill="#E08C9E"/></svg>
+      </div>
+      <div>
+        <h1>omaima's study lamp</h1>
+        <p>Little by little, a lot gets done.</p>
+      </div>
+    </div>
+    <div class="conn" id="conn" data-state="offline">
+      <span class="conn-dot" aria-hidden="true"></span>
+      <span class="conn-text" aria-live="polite"><strong id="connText">Lamp not connected</strong><span id="connSub">USB cable + Chrome or Edge</span></span>
+      <button class="btn" id="connectBtn" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v6M15 2v6M6 8h12v3a6 6 0 0 1-12 0V8zM12 17v5"/></svg>
+        <span id="connectLabel">Connect lamp</span>
+      </button>
+      <button class="btn ghost sm" id="demoBtn" type="button" title="Try the page with a pretend lamp">Try demo</button>
+    </div>
+  </header>
+
+  <div class="demo-bar" id="demoBar" hidden>
+    <span class="demo-tag">Demo</span>
+    <p>A pretend lamp, running 20× faster. Nothing you do in the demo is saved. Press <b>S</b> to sit down or step away.</p>
+    <button class="btn sm" id="demoSit" type="button" aria-pressed="false"><span id="demoSitLbl">Sit down</span></button>
+    <button class="btn ghost sm" id="demoExit" type="button">Exit demo</button>
+  </div>
+
+  <p class="notice" id="unsupported" hidden>This page needs Chrome or Edge on a computer to talk to the lamp over USB. Your tasks and study history still work here.</p>
+
+  <!-- ============ Quick start ============ -->
+  <section class="quick" id="quick" aria-labelledby="qsTitle">
+    <div class="qs-top">
+      <h2 id="qsTitle">Quick start</h2>
+      <ol class="qs-steps" id="qsSteps">
+        <li class="qs-step"><span class="qs-num" aria-hidden="true">1</span>Connect the lamp<span class="sr-only qs-sr"></span></li>
+        <li class="qs-step"><span class="qs-num" aria-hidden="true">2</span>Add today's tasks<span class="sr-only qs-sr"></span></li>
+        <li class="qs-step"><span class="qs-num" aria-hidden="true">3</span>Choose a focus length<span class="sr-only qs-sr"></span></li>
+        <li class="qs-step"><span class="qs-num" aria-hidden="true">4</span>Start a task<span class="sr-only qs-sr"></span></li>
+        <li class="qs-step"><span class="qs-num" aria-hidden="true">5</span>Study<span class="sr-only qs-sr"></span></li>
+        <li class="qs-step"><span class="qs-num" aria-hidden="true">6</span>Take a break<span class="sr-only qs-sr"></span></li>
+        <li class="qs-step"><span class="qs-num" aria-hidden="true">7</span>Track your progress<span class="sr-only qs-sr"></span></li>
+      </ol>
+      <button class="icon-btn" id="qsHide" type="button" aria-label="Hide quick start">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <p class="qs-hint" id="qsHint"></p>
+  </section>
+
+  <main class="layout" id="main">
+    <!-- ============ Hero: hamster + timer ============ -->
+    <section class="card hero" id="hero" data-state="offline" aria-label="Study timer">
+      <div class="hero-inner">
+        <div class="hero-stage">
+          <div class="stageWrap" id="stage">
+            <div class="orb"></div>
+            <svg class="ringSvg" viewBox="0 0 300 300" aria-hidden="true">
+              <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" class="stopA"/><stop offset="1" class="stopB"/></linearGradient></defs>
+              <circle class="ringTicks" cx="150" cy="150" r="131" fill="none" stroke-width="3" stroke-dasharray="1.2 12.62"/>
+              <circle class="ringTrack" cx="150" cy="150" r="142" fill="none" stroke-width="6"/>
+              <circle class="ringFill" id="ring" cx="150" cy="150" r="142" fill="none" stroke="url(#ringGrad)" stroke-width="6" stroke-linecap="round"
+                stroke-dasharray="892.2" stroke-dashoffset="892.2" transform="rotate(-90 150 150)" style="opacity:0"/>
+              <g class="ringHead" id="ringHead" style="opacity:0"><circle cx="150" cy="8" r="6.5"/></g>
+            </svg>
+            <div class="arch">
+              <svg id="buddy" viewBox="0 0 300 360" aria-hidden="true">
+                <g class="sparks">
+                  <path class="spark" d="M54 96l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill="#fff"/>
+                  <path class="spark" d="M242 110c0-6 8-8 10-2 2-6 10-4 10 2 0 6-10 12-10 12s-10-6-10-12z" fill="#8E78B8"/>
+                  <path class="spark" d="M42 232c0-6 8-8 10-2 2-6 10-4 10 2 0 6-10 12-10 12s-10-6-10-12z" fill="#C6B4E4"/>
+                  <path class="spark" d="M250 240l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#E8B7CB"/>
+                </g>
+                <ellipse cx="150" cy="346" rx="92" ry="12" fill="#C6B4E4" opacity=".22"/>
+                <g class="bob">
+                  <!-- cheek pouches (puff up at snack time) -->
+                  <g id="pouches" fill="#EFD6BD"><circle cx="48" cy="236" r="30"/><circle cx="252" cy="236" r="30"/><circle cx="52" cy="232" r="10" fill="#F7C9D3" opacity=".7"/><circle cx="248" cy="232" r="10" fill="#F7C9D3" opacity=".7"/></g>
+                  <!-- ears -->
+                  <g id="earL" class="ear">
+                    <circle cx="88" cy="158" r="25" fill="#EFD6BD"/><circle cx="88" cy="158" r="14" fill="#F2BFCB"/>
+                  </g>
+                  <g id="earR" class="ear">
+                    <circle cx="212" cy="158" r="25" fill="#EFD6BD"/><circle cx="212" cy="158" r="14" fill="#F2BFCB"/>
+                    <g transform="translate(224 140) rotate(22) scale(.62)">
+                      <path d="M0 0 C-14 -20 -40 -18 -38 0 C-40 18 -14 20 0 0 Z" fill="#D9C8EE" stroke="#8E78B8" stroke-width="3" stroke-linejoin="round"/>
+                      <path d="M0 0 C14 -20 40 -18 38 0 C40 18 14 20 0 0 Z" fill="#D9C8EE" stroke="#8E78B8" stroke-width="3" stroke-linejoin="round"/>
+                      <path d="M-3 4 L-14 34 L-6 30 L-2 38 Z M3 4 L14 34 L6 30 L2 38 Z" fill="#D9C8EE" stroke="#8E78B8" stroke-width="3" stroke-linejoin="round"/>
+                      <circle r="7" fill="#C6B4E4" stroke="#8E78B8" stroke-width="3"/>
+                    </g>
+                  </g>
+                  <!-- round hamster body -->
+                  <ellipse cx="150" cy="252" rx="112" ry="102" fill="#EFD6BD"/>
+                  <ellipse cx="150" cy="166" rx="20" ry="11" fill="#E4C19F"/>
+                  <ellipse cx="150" cy="290" rx="82" ry="66" fill="#FFF8F1"/>
+                  <ellipse cx="150" cy="232" rx="40" ry="24" fill="#FFF8F1"/>
+                  <ellipse cx="120" cy="344" rx="18" ry="9" fill="#F6CFD6"/><ellipse cx="180" cy="344" rx="18" ry="9" fill="#F6CFD6"/>
+                  <g stroke="#D6BFA8" stroke-width="1.8" stroke-linecap="round">
+                    <path d="M112 228 L88 224"/><path d="M112 236 L88 238"/><path d="M188 228 L212 224"/><path d="M188 236 L212 238"/>
+                  </g>
+                  <ellipse cx="98" cy="240" rx="15" ry="9" fill="#F7C9D3" id="cheekL"/>
+                  <ellipse cx="202" cy="240" rx="15" ry="9" fill="#F7C9D3" id="cheekR"/>
+                  <g id="brows" stroke="#3F3547" stroke-width="4" stroke-linecap="round" fill="none">
+                    <path d="M104 180 L130 172"/><path d="M170 172 L196 180"/>
+                  </g>
+                  <g id="eyeL" transform="translate(118 208)"></g>
+                  <g id="eyeR" transform="translate(182 208)"></g>
+                  <path id="tear" class="tear" d="M104 230c-4 6-5 9-5 11a5 5 0 0 0 10 0c0-2-1-5-5-11z" fill="#C6B4E4"/>
+                  <path d="M144 221 Q150 216 156 221 Q150 229 144 221Z" fill="#F2A9B8" stroke="#E08C9E" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path id="mouth" fill="none" stroke="#3F3547" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <!-- resting paws -->
+                  <g id="paws" fill="#F6CFD6">
+                    <ellipse cx="120" cy="316" rx="17" ry="12"/><ellipse cx="180" cy="316" rx="17" ry="12"/>
+                  </g>
+                  <!-- book (while studying) -->
+                  <g id="book">
+                    <path d="M150 334 L96 322 L96 284 L150 296 L204 284 L204 322 Z" fill="#C6B4E4" stroke="#8E78B8" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M150 328 L102 316 L102 280 L150 292 Z" fill="#FFFFFF" stroke="#8E78B8" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M150 328 L198 316 L198 280 L150 292 Z" fill="#FFFFFF" stroke="#8E78B8" stroke-width="2" stroke-linejoin="round"/>
+                    <g stroke="#E6DCF2" stroke-width="2" stroke-linecap="round"><path d="M110 292 L140 299"/><path d="M110 302 L140 309"/><path d="M160 299 L190 292"/><path d="M160 309 L190 302"/></g>
+                    <ellipse cx="100" cy="300" rx="14" ry="11" fill="#F6CFD6"/>
+                    <ellipse cx="200" cy="300" rx="14" ry="11" fill="#F6CFD6"/>
+                  </g>
+                  <!-- cookie (snack break) -->
+                  <g id="mug">
+                    <circle cx="150" cy="300" r="24" fill="#E6BE90" stroke="#C99A68" stroke-width="2.5"/>
+                    <g fill="#7B5646"><circle cx="141" cy="292" r="3.2"/><circle cx="158" cy="296" r="3"/><circle cx="147" cy="308" r="3.4"/><circle cx="160" cy="309" r="2.6"/></g>
+                    <ellipse cx="124" cy="304" rx="13" ry="10" fill="#F6CFD6"/>
+                    <ellipse cx="176" cy="304" rx="13" ry="10" fill="#F6CFD6"/>
+                  </g>
+                </g>
+                <g class="zz"><text x="214" y="148" font-size="26">z</text><text x="226" y="134" font-size="32">z</text><text x="240" y="118" font-size="40">z</text></g>
+              </svg>
+            </div>
+            <button class="buddy-btn" id="buddyBtn" type="button" aria-label="Pet the hamster"></button>
+          </div>
+          <p class="caption" id="caption">connect me ♡</p>
+        </div>
+
+        <div class="hero-timer">
+          <div class="state-pill"><span class="state-dot" aria-hidden="true"></span><span id="stateLabel">Offline</span></div>
+          <p class="state-line" id="stateLine">Connect the lamp to begin</p>
+          <div class="time" id="time" aria-hidden="true"></div>
+          <p class="sr-only" id="timeSr" role="timer"></p>
+          <p class="what" id="what"></p>
+          <div class="now-task is-empty" id="nowTask">
+            <span class="nt-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></svg></span>
+            <span class="nt-body"><span class="nt-label" id="ntLabel">Current task</span><span class="nt-name" id="ntName">No tasks yet</span><span class="nt-time" id="ntTime"></span></span>
+            <button class="btn sm ghost" id="ntAction" type="button">Add task</button>
+          </div>
+          <dl class="hero-meta">
+            <div><dt>Studied today</dt><dd id="heroToday">0 min</dd></div>
+            <div><dt>Sessions done</dt><dd id="heroSessions">0</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Tasks ============ -->
+    <section class="card tasks" aria-labelledby="tasksTitle">
+      <div class="card-head"><div><h2 id="tasksTitle">Today's tasks</h2><p class="card-sub" id="taskSummary">Plan what you'll study</p></div></div>
+      <form class="todo-add" id="todoForm" autocomplete="off">
+        <label class="sr-only" for="todoInput">New task</label>
+        <input class="field" id="todoInput" maxlength="60" placeholder="What do you want to study?">
+        <button class="btn" id="todoAdd" type="submit">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add
+        </button>
+        <fieldset class="pri-pick">
+          <legend>Priority</legend>
+          <label class="pri-opt"><input type="radio" name="pri" value="high"><span><i class="pdot high"></i>High</span></label>
+          <label class="pri-opt"><input type="radio" name="pri" value="med" checked><span><i class="pdot med"></i>Medium</span></label>
+          <label class="pri-opt"><input type="radio" name="pri" value="low"><span><i class="pdot low"></i>Low</span></label>
+        </fieldset>
+      </form>
+      <div class="task-scroll">
+        <ul class="task-list" id="todos" aria-label="Tasks to do"></ul>
+        <div class="empty" id="todoEmpty"><span aria-hidden="true">🌱</span><p>Nothing here yet. Add what you want to study today.</p></div>
+        <p class="all-done" id="allDone" hidden>Everything's done for today 🎉</p>
+        <div id="doneWrap" hidden>
+          <h3 class="list-head">Done (<span id="doneCount">0</span>)</h3>
+          <ul class="task-list done-list" id="doneList" aria-label="Completed tasks"></ul>
+        </div>
+      </div>
+      <button class="btn ghost sm carry" id="carryBtn" type="button" hidden></button>
+    </section>
+
+    <!-- ============ Progress ============ -->
+    <section class="card stats" id="stats" aria-labelledby="statsTitle">
+      <div class="card-head"><div><h2 id="statsTitle">Your progress</h2><p class="card-sub" id="todayDate"></p></div></div>
+      <div class="stats-top">
+        <div class="today-total"><span class="big" id="todayTotal">0 min</span><span class="big-sub">studied today</span></div>
+        <div class="goal-box">
+          <div class="goal-head"><span><b class="goal-pct" id="goalPct">0%</b><span id="goalOf">of your 4 h goal</span></span><span id="goalLeft"></span></div>
+          <div class="goal-track" id="goalTrack" role="progressbar" aria-label="Daily goal progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="goal-fill zero" id="goalFill"></span></div>
+        </div>
+      </div>
+      <p class="mood" id="mood"><span id="moodIcon" aria-hidden="true">🌱</span><span id="moodText">You're just getting started</span></p>
+      <dl class="metrics">
+        <div class="metric"><dt>Sessions done</dt><dd id="mSessions">0</dd></div>
+        <div class="metric"><dt>Current task</dt><dd id="mTask">—</dd><small id="mTaskName">No task started</small></div>
+        <div class="metric"><dt>This week</dt><dd id="mWeek">0 min</dd></div>
+      </dl>
+      <div class="chart-head"><h3>Last 7 days</h3><span id="weekGoalDays"></span></div>
+      <div class="chart" id="chart" role="img" aria-label="Study time for the last 7 days">
+        <div class="plot"><div class="goal-line" id="goalLine"><span>goal</span></div><div class="bars" id="bars"></div></div>
+        <div class="days" id="dayNames"></div>
+      </div>
+    </section>
+
+    <!-- ============ Settings ============ -->
+    <section class="card settings" aria-labelledby="setTitle">
+      <div class="card-head"><div><h2 id="setTitle">Session settings</h2><p class="card-sub">Focus and break lengths are saved on the lamp.</p></div></div>
+
+      <div class="set-group" role="group" aria-labelledby="gFocus">
+        <div class="set-head"><h3 id="gFocus">Focus</h3><span class="set-value" id="focusVal">—</span></div>
+        <div class="seg">
+          <button class="opt lamp-only" type="button" data-focus="25" aria-pressed="false" aria-label="25 minute focus">25<small>min</small></button>
+          <button class="opt lamp-only" type="button" data-focus="40" aria-pressed="false" aria-label="40 minute focus">40<small>min</small></button>
+          <button class="opt lamp-only" type="button" data-focus="50" aria-pressed="false" aria-label="50 minute focus">50<small>min</small></button>
+          <button class="opt lamp-only" type="button" data-focus="60" aria-pressed="false" aria-label="60 minute focus">60<small>min</small></button>
+        </div>
+        <div class="custom" id="focusCustom">
+          <span>Custom</span>
+          <input class="num" type="number" id="fH" min="0" max="4" value="0" aria-label="Custom focus hours"><span>h</span>
+          <input class="num" type="number" id="fM" min="0" max="59" value="40" aria-label="Custom focus minutes"><span>min</span>
+          <button class="btn sm ghost lamp-only" id="fSet" type="button">Set</button>
+        </div>
+      </div>
+
+      <div class="set-group" role="group" aria-labelledby="gBreak">
+        <div class="set-head"><h3 id="gBreak">Break</h3><span class="set-value" id="breakVal">—</span></div>
+        <div class="seg three">
+          <button class="opt lamp-only" type="button" data-break="5" aria-pressed="false" aria-label="5 minute break">5<small>min</small></button>
+          <button class="opt lamp-only" type="button" data-break="10" aria-pressed="false" aria-label="10 minute break">10<small>min</small></button>
+          <button class="opt lamp-only" type="button" data-break="15" aria-pressed="false" aria-label="15 minute break">15<small>min</small></button>
+        </div>
+        <div class="custom" id="breakCustom">
+          <span>Custom</span>
+          <input class="num" type="number" id="bM" min="1" max="59" value="5" aria-label="Custom break minutes"><span>min</span>
+          <button class="btn sm ghost lamp-only" id="bSet" type="button">Set</button>
+        </div>
+      </div>
+
+      <div class="set-group" role="group" aria-labelledby="gGoal">
+        <div class="set-head"><h3 id="gGoal">Daily goal</h3><span class="set-value" id="goalVal">4 h</span></div>
+        <div class="goal-set">
+          <div class="stepper">
+            <button type="button" id="goalMinus" aria-label="Lower goal by half an hour">−</button>
+            <input class="num" type="number" id="goalH" min="0.5" max="16" step="0.5" value="4" aria-label="Daily goal in hours">
+            <button type="button" id="goalPlus" aria-label="Raise goal by half an hour">+</button>
+          </div>
+          <span>hours a day</span>
+          <button class="btn sm ghost" id="goalSet" type="button">Save goal</button>
+        </div>
+      </div>
+      <p class="hint" id="ctrlHint">Connect the lamp to change focus and break lengths.</p>
+    </section>
+
+    <!-- ============ Lamp note ============ -->
+    <section class="card note-card" aria-labelledby="noteTitle">
+      <div class="note-grid">
+        <div class="lamp" aria-label="Preview of the lamp screen">
+          <div class="lamp-screen is-empty" id="lampScreen"><span class="lamp-screen-tag" id="lampTag" hidden>sent</span><span class="lamp-text" id="lampText">your note shows up here</span></div>
+          <div class="lamp-neck" aria-hidden="true"></div>
+          <div class="lamp-foot" aria-hidden="true"></div>
+          <div class="fit" id="fit"><div class="fit-track"><span id="fitFill"></span></div><p id="fitText">Up to 21 characters fit on the lamp</p></div>
+        </div>
+        <div class="composer">
+          <div class="card-head"><div><h2 id="noteTitle">Leave a note on the lamp</h2><p class="card-sub">It pops up on the lamp's little screen.</p></div></div>
+          <form class="msg-row" id="msgForm" autocomplete="off">
+            <label class="sr-only" for="msgInput">Message for the lamp</label>
+            <input class="field" id="msgInput" maxlength="40" placeholder="Write a note, add emojis…">
+            <button class="btn lamp-only" id="msgBtn" type="submit">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg><span class="lbl">Send</span>
+            </button>
+          </form>
+          <p class="msg-status" id="msgStatus" aria-live="polite"></p>
+          <div class="emojis" role="group" aria-label="Add an emoji to the note">
+            <button class="emo" type="button" data-emo="❤️" aria-label="Add heart">❤️</button>
+            <button class="emo" type="button" data-emo="⭐" aria-label="Add star">⭐</button>
+            <button class="emo" type="button" data-emo="😊" aria-label="Add smile">😊</button>
+            <button class="emo" type="button" data-emo="💧" aria-label="Add water drop">💧</button>
+            <button class="emo" type="button" data-emo="✅" aria-label="Add tick">✅</button>
+            <button class="emo" type="button" data-emo="🌙" aria-label="Add moon">🌙</button>
+            <button class="emo" type="button" data-emo="☕" aria-label="Add coffee">☕</button>
+          </div>
+          <div class="quick-msgs" role="group" aria-label="Send a quick note">
+            <button class="qchip lamp-only" type="button" data-quick="You got this ⭐">You got this ⭐</button>
+            <button class="qchip lamp-only" type="button" data-quick="Drink water 💧">Drink water 💧</button>
+            <button class="qchip lamp-only" type="button" data-quick="Proud of you ❤️">Proud of you ❤️</button>
+            <button class="qchip lamp-only" type="button" data-quick="Good night 🌙">Good night 🌙</button>
+          </div>
+          <div class="note-foot">
+            <button class="btn ghost sm lamp-only" id="tuneBtn" type="button"><span aria-hidden="true">♪</span><span class="lbl">Play the happy tune</span></button>
+            <p class="hint" id="msgHint">Connect the lamp to send notes and play the tune.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============ Today's Mission / Focus Score ============ -->
+    <section class="card mission-card" id="mission" aria-labelledby="missionTitle">
+      <div class="mission-top">
+        <div>
+          <span class="mission-kicker">Your study cockpit</span>
+          <h2 class="mission-title" id="missionTitle">Today's mission</h2>
+          <p class="mission-sub" id="missionSub">Turn today's tasks into one clear finish line.</p>
+        </div>
+        <div class="mission-actions">
+          <span class="v2-badge" id="streakBadge">🔥 0 day streak</span>
+          <button class="btn ghost sm" id="focusModeBtn" type="button">Focus mode</button>
+        </div>
+      </div>
+      <div class="mission-grid">
+        <div class="mission-panel">
+          <div class="mission-stat"><div><div class="mission-small">Mission progress</div><div class="mission-big" id="missionPct">0%</div></div><div class="mission-small" id="missionCount">0 of 0 tasks complete</div></div>
+          <div class="mission-progress"><span id="missionFill"></span></div>
+          <div id="missionTasks"></div>
+        </div>
+        <div class="mission-panel">
+          <div class="mission-stat">
+            <div><div class="mission-small">Focus score</div><div class="mission-big" id="focusScore">0</div><div class="score-note" id="scoreNote">Start a session to build today's score.</div></div>
+            <div class="score-ring" id="scoreRing"><b id="scoreRingText">0</b></div>
+          </div>
+          <div style="height:14px"></div>
+          <div class="streak-row"><span class="streak-fire">🔥</span><div><b id="streakText">Build your streak</b><div class="mission-small" id="streakSub">25+ focused minutes counts as a study day.</div></div></div>
+          <div style="height:12px"></div>
+          <button class="btn ghost sm" id="sessionReportBtn" type="button" disabled>AI session report</button>
+          <p class="hint" id="sessionReportText">Your next completed lamp session will produce a course-aware report.</p>
+        </div>
+      </div>
+    </section>
+    <!-- ============ Course Library ============ -->
+    <section class="card library" id="library" aria-labelledby="libraryTitle">
+      <div class="card-head">
+        <div><h2 id="libraryTitle">Course library</h2><p class="card-sub">Upload your course material and let your study buddy learn from it.</p></div>
+        <span class="library-status" id="libraryStatus">AI not connected</span>
+      </div>
+      <div class="library-grid">
+        <div class="library-upload">
+          <div class="upload-icon">📚</div>
+          <h3>Add course material</h3>
+          <p class="hint">PDF, Word (.docx), PowerPoint (.pptx), TXT or Markdown. Scanned books (photos of pages) can't be read.</p>
+          <label class="field-label" for="courseName">Course / subject</label>
+          <input class="field" id="courseName" maxlength="80" placeholder="e.g. Biology 101" autocomplete="off">
+          <label class="upload-drop" for="courseFiles">
+            <input id="courseFiles" type="file" multiple accept=".pdf,.docx,.pptx,.txt,.md,.markdown,.csv,.html,.htm">
+            <span class="upload-main" id="uploadMain">Choose files</span><span class="upload-sub" id="uploadSub">or drop them here</span>
+          </label>
+          <button class="btn" id="uploadCourseBtn" type="button">Upload to study library</button>
+          <p class="upload-progress" id="uploadProgress" aria-live="polite"></p>
+        </div>
+        <div class="library-courses">
+          <div class="library-section-title"><b>Your courses</b><span id="courseCount">0 courses</span></div>
+          <div id="courseList" class="course-list"></div>
+          <div class="empty-library" id="libraryEmpty"><span>📖</span><p>No course material yet.<br>Add a book, lecture pack, or course PDF to begin.</p></div>
+        </div>
+      </div>
+      <div class="library-tools" id="libraryTools" hidden>
+        <div><span class="eyebrow">ACTIVE COURSE</span><strong id="activeCourseName">—</strong><p class="hint" id="activeCourseFiles">0 files</p></div>
+        <div class="library-actions">
+          <button class="btn ghost sm" id="libraryQuiz" type="button">Quiz me</button>
+          <button class="btn ghost sm" id="libraryFlashcards" type="button">Make flashcards</button>
+          <button class="btn ghost sm" id="libraryStudyPlan" type="button">Make study plan</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Notebook ============ -->
+    <section class="card notebook" aria-labelledby="nbHead">
+      <div class="card-head">
+        <div><h2 id="nbHead">Notebook</h2><p class="card-sub" id="nbCount">Your study notes, saved on this computer</p></div>
+        <button class="btn sm" id="nbNew" type="button"><span aria-hidden="true">+</span><span class="lbl">New note</span></button>
+      </div>
+      <div class="empty" id="nbEmpty"><span aria-hidden="true">📓</span><p>No notes yet. Click <b>New note</b> to start writing.</p></div>
+      <div class="nb-grid" id="nbGrid" hidden>
+        <div class="nb-side">
+          <label class="sr-only" for="nbSearch">Search notes</label>
+          <input class="field" id="nbSearch" type="search" placeholder="Search notes" autocomplete="off">
+          <ul class="nb-list" id="nbList" aria-label="Your notes"></ul>
+          <p class="nb-nomatch" id="nbNoMatch" hidden>No notes match that search.</p>
+        </div>
+        <div class="nb-paper" id="nbPaper">
+          <label class="sr-only" for="nbTitleIn">Note title</label>
+          <input class="nb-title-in" id="nbTitleIn" maxlength="80" placeholder="Title" autocomplete="off">
+          <label class="sr-only" for="nbBody">Note</label>
+          <textarea class="nb-body" id="nbBody" placeholder="Start writing…" spellcheck="true"></textarea>
+          <div class="nb-foot">
+            <span id="nbWords">0 words</span>
+            <span id="nbSaved" aria-live="polite">Saved</span>
+            <span class="grow"></span>
+            <button class="btn ghost sm lamp-only" id="nbLamp" type="button" title="Shows the title (first 21 characters) on the lamp screen"><span class="lbl">Show title on lamp</span></button>
+            <button class="btn ghost sm" id="nbDelete" type="button"><span class="lbl">Delete</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ============ Study buddy (AI) ============ -->
+    <section class="card buddy-ai" aria-labelledby="aiHead">
+      <div class="card-head" style="margin-bottom:0">
+        <div><h2 id="aiHead">Study buddy</h2><p class="card-sub" id="aiSub">Ask questions, get explanations, or get quizzed on your notes.</p></div>
+        <button class="btn ghost sm" id="aiClear" type="button" hidden><span class="lbl">New chat</span></button>
+      </div>
+
+      <div class="ai-setup" id="aiSetup">
+        <p><b>Connect your AI study buddy</b> (Google Gemini). It uses your notes and study history when you ask questions, get quizzed, or make flashcards.</p>
+        <div class="ai-connection-box">
+          <span class="status-dot" id="aiServerDot"></span><span id="aiServerText">Checking the study server…</span>
+        </div>
+        <p class="hint">For safety, your AI API key lives on the small study server, never inside this page. The page only talks to that server.</p>
+      </div>
+      <div id="aiReady" hidden>
+        <div class="ai-chips" role="group" aria-label="Use your open note">
+          <button class="ai-chip" type="button" data-ai="explain">Explain my note</button>
+          <button class="ai-chip" type="button" data-ai="quiz">Quiz me (5 questions)</button>
+          <button class="ai-chip" type="button" data-ai="summary">Summarize my note</button>
+          <button class="ai-chip" type="button" data-ai="simple">Make it simpler</button>
+          <button class="ai-chip" type="button" data-ai="flashcards">Make flashcards</button>
+          <button class="ai-chip" type="button" data-ai="weak">Find my weak areas</button>
+        </div>
+        <div class="quiz-bar" id="quizBar" hidden>
+          <span class="quiz-tag">Quiz</span>
+          <span id="quizScore">Question 1 of 5</span>
+          <span class="quiz-weak" id="quizWeak"></span>
+          <button class="link-btn" id="quizEnd" type="button">End quiz</button>
+        </div>
+        <div class="ai-log" id="aiLog" aria-live="polite" style="margin-top:14px">
+          <p class="ai-hello" id="aiHello">Hi! Ask me anything you're studying, or use the buttons above to work with the note open in your notebook.</p>
+        </div>
+        <form class="ai-row" id="aiForm" autocomplete="off" style="margin-top:14px">
+          <label class="sr-only" for="aiInput">Ask the study buddy</label>
+          <textarea class="field ai-input" id="aiInput" rows="1" placeholder="Ask a question… (Enter to send, Shift+Enter for a new line)"></textarea>
+          <button class="btn" id="aiSend" type="submit"><span class="lbl">Ask</span></button>
+        </form>
+        <div class="ai-foot" style="margin-top:10px">
+          <span id="aiMode"></span>
+        </div>
+      </div>
+      <p class="hint" id="aiChecking">Getting the study buddy ready…</p>
+    </section>
+  </main>
+
+  <details class="card help">
+    <summary>How to connect the lamp</summary>
+    <div class="help-body">
+      <ol>
+        <li>Plug the lamp into this computer with the USB cable.</li>
+        <li>Close the Serial Monitor in the Arduino program (only one app can use the cable at a time).</li>
+        <li>Click <b>Connect lamp</b> and pick <b>USB-SERIAL CH340</b> or the <b>COM</b> port.</li>
+        <li>Before uploading new code from Arduino, click <b>Disconnect</b> here first.</li>
+      </ol>
+      <p>The timer lives on the lamp: it starts when you sit down and notices when you step away. This page mirrors it and keeps your history.</p>
+    </div>
+  </details>
+
+  <footer class="foot">
+    <span>Tasks and study history are saved in this browser.</span>
+    <button class="link-btn" id="qsShow" type="button" hidden>Show quick start</button>
+  </footer>
+</div>
+
+<button class="btn ghost sm focus-exit" id="focusExitBtn" type="button">Exit focus</button>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="fx" id="fx" aria-hidden="true"></div>
+<p class="sr-only" id="srStatus" aria-live="polite"></p>
+<script>
+'use strict';
+/* =====================================================================
+   0. HELPERS
+   ===================================================================== */
+const $=id=>document.getElementById(id);
+const INK='#3F3547';
+const motionQuery=window.matchMedia('(prefers-reduced-motion: reduce)');
+const calm=()=>motionQuery.matches;
+function setText(el,v){v=String(v);if(el.textContent!==v)el.textContent=v}
+const store={
+  get(k){try{return localStorage.getItem(k)}catch(e){return null}},
+  set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+};
+const clock=ms=>{const t=Math.ceil(ms/1000),hh=Math.floor(t/3600),mm=Math.floor(t/60)%60,ss=t%60;
+  return (hh?hh+':':'')+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0')};
+function fmtDur(sec){const m=Math.floor(sec/60),h=Math.floor(m/60);return h?h+' h'+(m%60?' '+(m%60)+' min':''):m+' min'}
+function fmtMin(m){const h=Math.floor(m/60),r=m%60;return h?h+' h'+(r?' '+r+' min':''):m+' min'}
+function fmtBar(sec){const m=Math.round(sec/60);if(m<1)return '';if(m<60)return m+'m';const h=sec/3600;return (h>=10?String(Math.round(h)):h.toFixed(1).replace(/\.0$/,''))+'h'}
+function fmtGoal(g){return (g%1?g.toFixed(1):g)+' h'}
+const dayKey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+/* Temporarily swap a button's label (keeps icons intact if the button has a .lbl span) */
+function flashBtn(btn,txt){const el=btn.querySelector('.lbl')||btn;if(!btn.dataset.label)btn.dataset.label=el.textContent;
+  el.textContent=txt;clearTimeout(btn._t);btn._t=setTimeout(()=>{el.textContent=btn.dataset.label},1500)}
+
+/* =====================================================================
+   1. APP STATE
+   (localStorage keys are unchanged so existing data keeps working)
+   ===================================================================== */
+const KEY='omaimaLampHistory',GOAL_KEY='omaimaLampGoal',QS_KEY='omaimaLampQuickStart';
+let hist={};try{hist=JSON.parse(store.get(KEY)||'{}')||{}}catch(e){hist={}}
+let qs={};try{qs=JSON.parse(store.get(QS_KEY)||'{}')||{}}catch(e){qs={}}
+// live lamp status
+let st=null,stAt=0,connected=false,connecting=false,lastMessage='',prevMode=-1;
+// serial
+let port=null,reader=null,writer=null,readDone=null,needSync=false;
+const enc=new TextEncoder();
+// hamster
+let lastFace='',capText=null,step=0,stepStart=performance.now(),pX=0,pY=0,lidNow=0,nextBlink=0,blinkEnd=0,reaction=null;
+// render caches (skip DOM work when nothing changed)
+let demoOn=false,demoSim=null,demoTimer=null,realHist=null;   // demo mode (section 15)
+let ackUntil=0,historyReady=false,shownDay=dayKey(new Date()),newPri='med',lastAddedId=null,msgWait=0,lastSentLamp='';
+let chipKey=null,connShown='',stateShown='',clockStr=null,clockMin='',ringKey='',nowTaskKey='',titleShown='',chartKey='',qsKey='';
+let studySessionId=null,studySessionStartedAt=0,studySessionLastMode=-1,lastSessionReport='';
+
+/* =====================================================================
+   2. FEEDBACK — toasts, sparkle bursts, flying note
+   ===================================================================== */
+function toast(msg,opt={}){
+  const {tone='info',ms=3800,action}=opt,box=$('toasts');
+  while(box.children.length>=3)box.firstElementChild.remove();
+  const el=document.createElement('div');el.className='toast '+tone;if(tone==='err')el.setAttribute('role','alert');
+  const ic=document.createElement('span');ic.className='toast-ic';ic.setAttribute('aria-hidden','true');ic.textContent=({ok:'✓',err:'!',warn:'!'})[tone]||'♡';
+  const tx=document.createElement('span');tx.className='toast-tx';tx.textContent=msg;el.append(ic,tx);
+  let timer;
+  const close=()=>{clearTimeout(timer);if(!el.isConnected||el.classList.contains('out'))return;el.classList.add('out');setTimeout(()=>el.remove(),calm()?0:260)};
+  if(action){const b=document.createElement('button');b.type='button';b.className='toast-act';b.textContent=action.label;b.onclick=()=>{action.fn();close()};el.append(b)}
+  box.append(el);timer=setTimeout(close,ms);
+  el.addEventListener('mouseenter',()=>clearTimeout(timer));
+  el.addEventListener('mouseleave',()=>{timer=setTimeout(close,1600)});
+}
+function burst(x,y,o={}){
+  if(calm())return;
+  const {n=10,spread=70,chars=['✦','✧','♡'],colors=['#C6B4E4','#E8B7CB','#F1D3A6','#ffffff'],size=14,dur=900}=o,layer=$('fx');
+  for(let i=0;i<n;i++){
+    const s=document.createElement('span'),a=Math.random()*Math.PI*2,d=spread*(.45+Math.random()*.75);
+    s.className='p';s.textContent=chars[i%chars.length];
+    s.style.cssText=`left:${x}px;top:${y}px;--dx:${(Math.cos(a)*d).toFixed(1)}px;--dy:${(Math.sin(a)*d-spread*.35).toFixed(1)}px;--r:${Math.round((Math.random()*2-1)*140)}deg;color:${colors[i%colors.length]};font-size:${Math.round(size*(.7+Math.random()*.6))}px;animation-duration:${Math.round(dur*(.8+Math.random()*.45))}ms`;
+    s.addEventListener('animationend',()=>s.remove());layer.append(s);
+  }
+}
+function burstFrom(el,o){if(!el)return;const r=el.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,o)}
+function flashScreen(){const s=$('lampScreen');s.classList.remove('flash');void s.offsetWidth;s.classList.add('flash')}
+function flyNote(fromEl,toEl){
+  if(calm()||!fromEl||!toEl||!Element.prototype.animate){flashScreen();return}
+  const a=fromEl.getBoundingClientRect(),b=toEl.getBoundingClientRect(),el=document.createElement('span');
+  el.className='fly';el.textContent='💌';$('fx').append(el);
+  const x0=a.left+a.width/2,y0=a.top+a.height/2,x1=b.left+b.width/2,y1=b.top+b.height/2;
+  const anim=el.animate([
+    {transform:`translate(${x0}px,${y0}px) translate(-50%,-50%) scale(.6)`,opacity:0},
+    {transform:`translate(${(x0+x1)/2}px,${Math.min(y0,y1)-70}px) translate(-50%,-50%) scale(1.2) rotate(-14deg)`,opacity:1,offset:.5},
+    {transform:`translate(${x1}px,${y1}px) translate(-50%,-50%) scale(.4)`,opacity:0}
+  ],{duration:760,easing:'cubic-bezier(.4,0,.2,1)'});
+  anim.onfinish=()=>{el.remove();flashScreen()};
+}
+
+/* =====================================================================
+   3. HAMSTER — face drawing (unchanged art, extended expressions)
+   ===================================================================== */
+function eyeSVG(kind,px,py,open,wide,side){
+  if(kind==='happy')return `<path d="M-13 5 Q0 -12 13 5" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>`;
+  if(kind==='closed')return `<path d="M-13 0 Q0 11 13 0" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>
+    <path d="M${-13*side} 1 l${-5*side} 4" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;
+  const s=wide?1.18:1,o=Math.max(.07,open);
+  let lid='';
+  if(open<.75&&open>.1)lid=`<path d="M-16 ${-15*o} Q0 ${-19*o} 16 ${-15*o}" fill="none" stroke="${INK}" stroke-width="3.5" stroke-linecap="round" transform="translate(0 ${py*.5+2})"/>`;
+  return `<g transform="translate(${px} ${py}) scale(${s} ${s*o})">
+    <path d="M${-11*side} -11 l${-5*side} -5" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>
+    <ellipse rx="12" ry="15" fill="${INK}"/>
+    <circle cx="4" cy="-6" r="4.5" fill="#fff"/><circle cx="-4" cy="6" r="2" fill="#fff"/></g>${lid}`;
+}
+const MOUTHS={smile:'M139 231 Q144.5 239 150 231 Q155.5 239 161 231',big:'M139 230 Q150 250 161 230 Z',frown:'M141 241 Q150 233 159 241',
+  flat:'M143 236 L157 236',o:'M150 232 a6 7 0 1 0 0.1 0',tiny:'M144 232 Q147 236 150 232 Q153 236 156 232'};
+function setFace(f){
+  const key=JSON.stringify(f);if(key===lastFace)return;lastFace=key;
+  $('eyeL').innerHTML=eyeSVG(f.eyes,f.px,f.py,f.open,f.wide,1);
+  $('eyeR').innerHTML=eyeSVG(f.eyes,f.px,f.py,f.open,f.wide,-1);
+  const m=$('mouth');m.setAttribute('d',MOUTHS[f.mouth]);m.setAttribute('fill',f.mouth==='big'?'#F2A9B8':f.mouth==='o'?INK:'none');
+  $('brows').style.display=f.sad?'':'none';$('tear').style.display=f.tear?'':'none';
+  const blush=f.eyes==='happy'?'#F6C3CF':'#F9DDE3';$('cheekL').setAttribute('fill',blush);$('cheekR').setAttribute('fill',blush);
+  const droop=f.zzz||f.sad||f.sleepy,perk=f.wide;
+  $('earL').style.transform=droop?'rotate(-30deg)':perk?'rotate(-7deg)':'rotate(0deg)';
+  $('earR').style.transform=droop?'rotate(30deg)':perk?'rotate(7deg)':'rotate(0deg)';
+  $('book').style.display=f.prop==='book'?'':'none';$('mug').style.display=f.prop==='mug'?'':'none';
+  $('paws').style.display=f.prop?'none':'';$('pouches').style.display=f.prop==='mug'?'':'none';
+  const s=$('stage').classList;
+  s.toggle('twitch',!!f.twitch);s.toggle('sleeping',!!f.zzz);s.toggle('party',!!f.party);s.toggle('bounce',!!f.party);s.toggle('hop',!!f.hop&&!f.party);
+}
+function setCaption(t){if(t!==capText){capText=t;$('caption').textContent=t}}
+
+// Idle "look around" routine: [pupil x, pupil y, lid %, duration ms]
+const STEPS=[[0,0,0,1500],[-8,0,0,1200],[8,0,0,1200],[0,0,100,200],[0,0,0,800],[0,-7,0,1000],[-6,5,0,1000],
+  [6,5,0,1000],[0,0,100,200],[0,4,50,2500],[0,5,70,2000],[0,5,100,250],[0,4,55,2000]];
+function awayFace(now){
+  if(now-stepStart>STEPS[step][3]){step=(step+1)%STEPS.length;stepStart=now}
+  const[tx,ty,tl]=STEPS[step];pX+=(tx-pX)*.2;pY+=(ty-pY)*.2;lidNow=tl===100?100:lidNow+(tl-lidNow)*.2;
+  return{eyes:'open',px:Math.round(pX),py:Math.round(pY),open:+(1-lidNow/100*.93).toFixed(2),mouth:tl>=50&&tl<100?'flat':'tiny',sleepy:tl>=50&&tl<100,twitch:1,selfBlink:1};
+}
+// Natural, slightly irregular blinking for any open-eyed face
+function blinking(now){if(now>nextBlink){blinkEnd=now+140;nextBlink=now+2600+Math.random()*3400}return now<blinkEnd}
+
+// Short-lived reactions layered on top of the lamp's state
+const REACTIONS={
+  start:{face:{eyes:'happy',mouth:'big',hop:1},cap:"let's do this! ✦",ms:1700},
+  back:{face:{eyes:'happy',mouth:'smile',hop:1},cap:'welcome back ♡',ms:1500},
+  yawn:{face:{eyes:'open',open:.3,mouth:'o',sleepy:1},cap:'break time… *yawn*',ms:1600},
+  goal:{face:{eyes:'happy',mouth:'big',party:1},cap:'daily goal reached! 🎉',ms:3800},
+  hello:{face:{eyes:'open',wide:true,mouth:'o'},cap:'oh! hi there ♡',ms:1500},
+  taskDone:{face:{eyes:'happy',mouth:'smile',hop:1},cap:'one more done ✓',ms:1400},
+  taskPick:{face:{eyes:'open',wide:true,mouth:'smile'},cap:'ooh, good pick',ms:1300},
+  boop:{face:{eyes:'happy',mouth:'smile',hop:1},cap:['hehe ♡','boop!','*happy squeak*',"you're doing great"],ms:1100},
+  sing:{face:{eyes:'happy',mouth:'o',hop:1},cap:'♪ la la la ♪',ms:2200}
+};
+function react(kind){const r=REACTIONS[kind];if(!r)return;
+  const cap=Array.isArray(r.cap)?r.cap[Math.floor(Math.random()*r.cap.length)]:r.cap;
+  reaction={face:r.face,cap,until:performance.now()+r.ms}}
+
+/* =====================================================================
+   4. TIMER VIEW — maps the lamp's mode to what the page shows
+   Lamp modes: 0 away · 1 left mid-session · 2 asleep · 3 saying hi · 4 focus · 5 finished · 6 break
+   ===================================================================== */
+const STATES={
+  offline:{label:'Offline',line:'Connect the lamp to begin'},
+  waiting:{label:'Connecting',line:'Saying hello to the lamp…'},
+  idle:{label:'Idle',line:'Ready when you are'},
+  paused:{label:'Paused',line:"I'll keep your place"},
+  focus:{label:'Focusing',line:'Studying with you'},
+  done:{label:'Completed',line:'You did it!'},
+  break:{label:'Break',line:'Take a little break'}
+};
+const since=now=>Math.min(now-stAt,1500);
+function computeView(now){
+  const v={face:null,cap:'',ring:null,state:'idle',time:'',preview:false,what:''};
+  if(!connected){
+    v.face={eyes:'closed',mouth:'o',zzz:1};v.state=connecting?'waiting':'offline';v.cap=connecting?'waking up…':'connect me ♡';
+    v.time='--:--';v.preview=true;v.what=connecting?'Pick the lamp in the browser pop-up':'Plug in the lamp, then press Connect lamp';return v}
+  if(!st){v.face={eyes:'open',mouth:'tiny',twitch:1};v.state='waiting';v.cap='hello?';v.time='--:--';v.preview=true;v.what='Waiting for the lamp to answer';return v}
+  const preview=()=>{v.time=clock(st.focusMin*60000);v.preview=true};
+  switch(st.mode){
+    case 0:v.face=awayFace(now);v.cap=v.face.sleepy?'so sleepy…':'waiting for you';preview();v.what='Sit down to start a '+fmtMin(st.focusMin)+' session';break;
+    case 1:{const fm=st.focusMin*60000,done=st.focusDone*1000;v.state='paused';
+      v.face={eyes:'open',px:0,py:6,open:.8,mouth:'frown',sad:1};v.cap="i'll wait right here ♡";
+      v.ring=done/fm;v.time=clock(Math.max(fm-done,0));v.what='Stepped away mid-session';break}
+    case 2:v.face={eyes:'closed',mouth:'o',zzz:1};v.cap='zzz';preview();v.what='The lamp is napping. Sit down to wake it';break;
+    case 3:v.face={eyes:'happy',mouth:'smile',party:1};v.cap='hi omaima ♡';preview();v.what='Saying hi';break;
+    case 4:{const fm=st.focusMin*60000,done=st.focusDone*1000+since(now),left=Math.max(fm-done,0),wide=st.dist>0&&st.dist<15;v.state='focus';
+      v.face={eyes:'open',px:0,py:wide?0:6,open:1,wide,mouth:wide?'o':'smile',prop:'book'};
+      v.cap=wide?'ooh, so close!':'studying with you';v.ring=done/fm;v.time=clock(left);v.what='left in session '+(st.pomos+1);break}
+    case 5:v.state='done';v.face={eyes:'happy',mouth:'big',party:1};v.cap='you did it ♡';v.ring=1;v.time='00:00';v.what='Session finished. Time for a break';break;
+    case 6:{const bm=st.breakMin*60000,used=st.modeSec*1000+since(now);v.state='break';v.ring=used/bm;v.time=clock(Math.max(bm-used,0));v.what='of break left';
+      if(st.here){const p=Math.floor(now/700)%2?8:-8;v.face={eyes:'open',px:p,py:0,open:1,mouth:'o'};v.cap='go take a break!'}
+      else if(st.modeSec<20){v.face={eyes:'happy',mouth:'smile',prop:'mug'};v.cap='snack break ♡'}
+      else{v.face={eyes:'closed',mouth:'tiny',prop:'mug',zzz:1};v.cap='cozy little nap…'}break}
+    default:v.face={eyes:'open',px:0,py:0,open:1,mouth:'smile'};preview();
+  }
+  // lamp overlays win over everything else
+  if(st.overlay===2){v.face={eyes:'happy',mouth:'big',party:1};v.cap=lastMessage||'hi!'}
+  else if(st.overlay===1){const m=Math.floor(st.today/60);v.face={eyes:'happy',mouth:'smile'};v.cap='today: '+Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m'}
+  return v;
+}
+function setState(s){if(s===stateShown)return;stateShown=s;$('hero').dataset.state=s;
+  setText($('stateLabel'),STATES[s].label);setText($('stateLine'),STATES[s].line);setText($('srStatus'),STATES[s].label+'. '+STATES[s].line)}
+const RING_LEN=892.2;
+function setRing(p){const on=p!==null&&p>0,q=on?Math.min(1,Math.max(0,p)):0,k=on+':'+q.toFixed(4);if(k===ringKey)return;ringKey=k;
+  const r=$('ring'),h=$('ringHead');r.style.opacity=on?1:0;r.style.strokeDashoffset=(RING_LEN*(1-q)).toFixed(1);
+  h.style.opacity=on&&q<1?1:0;h.style.transform='rotate('+(q*360).toFixed(2)+'deg)'}
+// Fixed-width digits so the clock never jitters; only changed digits are touched
+function renderClock(str,preview){
+  const el=$('time');el.classList.toggle('is-preview',!!preview);
+  if(str!==clockStr){
+    if(clockStr===null||clockStr.length!==str.length){el.textContent='';for(const ch of str){const s=document.createElement('span');s.className=ch===':'?'c':'d';s.textContent=ch;el.append(s)}}
+    else for(let i=0;i<str.length;i++)if(str[i]!==clockStr[i]){el.children[i].textContent=str[i];el.children[i].className=str[i]===':'?'c':'d'}
+    clockStr=str;
+  }
+  const minKey=preview?'p':str.slice(0,-3);           // screen readers: update once a minute, not every second
+  if(minKey!==clockMin){clockMin=minKey;setText($('timeSr'),preview||str.includes('-')?'Timer not running':str.slice(0,-3)+' minutes remaining')}
+}
+function renderNowTask(){
+  const ct=currentTask(),studying=!!(st&&st.mode===4),left=tasks().filter(x=>!x.done).length;
+  const key=ct?ct.id+'|'+ct.text+'|'+Math.floor((ct.sec||0)/60)+'|'+studying:'none|'+left;
+  if(key===nowTaskKey)return;nowTaskKey=key;
+  $('nowTask').classList.toggle('is-empty',!ct);
+  if(ct){setText($('ntLabel'),studying?'Working on':'Up next');setText($('ntName'),ct.text);setText($('ntTime'),ct.sec>=60?fmtDur(ct.sec)+' studied':'Just getting started');$('ntAction').hidden=true}
+  else{setText($('ntLabel'),'Current task');setText($('ntName'),left?'Pick a task to study':'No tasks yet');
+    setText($('ntTime'),left?'Press Start on a task in your list':'Add what you want to study');$('ntAction').hidden=false;setText($('ntAction'),left?'Choose task':'Add task')}
+}
+// Main render loop (~25 fps is plenty for a clock and a hamster)
+function frame(){
+  const now=performance.now(),v=computeView(now);
+  let face=v.face;
+  if(reaction){if(now<reaction.until&&!(st&&st.overlay)){face=reaction.face;if(reaction.cap)v.cap=reaction.cap}else if(now>=reaction.until)reaction=null}
+  face=Object.assign({px:0,py:0,open:1,wide:false},face);
+  if(face.eyes==='open'&&!face.selfBlink&&blinking(now))face=Object.assign({},face,{open:.07});
+  setFace(face);setCaption(v.cap);setRing(v.ring);setState(v.state);renderClock(v.time,v.preview);setText($('what'),v.what);
+  renderNowTask();updateConnUI();
+  const title=(v.state==='focus'||v.state==='break')?v.time+(v.state==='break'?' · break':' · focusing'):"omaima's study lamp";
+  if(title!==titleShown){titleShown=title;document.title=title}
+  setTimeout(()=>requestAnimationFrame(frame),40);
+}
+
+/* =====================================================================
+   5. STUDY HISTORY & DAILY GOAL (saved in this browser)
+   ===================================================================== */
+function save(){if(demoOn)return;store.set(KEY,JSON.stringify(hist))}
+function today(){const k=dayKey(new Date());if(!hist[k])hist[k]={sec:0,pomos:0};return hist[k]}
+function getGoal(){const g=parseFloat(store.get(GOAL_KEY));return g>0?g:4}
+function saveGoal(g){if(!(g>0))g=4;g=Math.min(16,Math.max(.5,g));store.set(GOAL_KEY,g);$('goalH').value=g;renderHistory();return g}
+// The lamp keeps a "not saved yet" counter of study seconds (even while this page is closed).
+function trackTime(){if(!st||!(st.pending>0))return;const now=performance.now();if(now<ackUntil)return;
+  today().sec+=st.pending;const ct=currentTask();if(ct)ct.sec=(ct.sec||0)+st.pending;save();updateTaskTimes();send('A'+st.pending);ackUntil=now+1500;renderHistory()}
+const DAY_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function renderHistory(){
+  const t=today(),goal=getGoal(),goalSec=goal*3600,ratio=t.sec/goalSec,pct=Math.min(1,ratio),met=ratio>=1;
+  setText($('todayTotal'),fmtDur(t.sec));setText($('heroToday'),fmtDur(t.sec));
+  setText($('heroSessions'),t.pomos||0);setText($('mSessions'),t.pomos||0);
+  setText($('goalPct'),Math.floor(ratio*100)+'%');setText($('goalOf'),'of your '+fmtGoal(goal)+' goal');setText($('goalVal'),fmtGoal(goal)+' a day');
+  setText($('goalLeft'),met?'Goal reached ✦':fmtDur(Math.max(0,goalSec-t.sec))+' to go');
+  const fill=$('goalFill');fill.style.width=(pct*100).toFixed(1)+'%';fill.classList.toggle('zero',t.sec<60);
+  const tr=$('goalTrack');tr.setAttribute('aria-valuenow',Math.round(pct*100));tr.setAttribute('aria-valuetext',fmtDur(t.sec)+' of '+fmtGoal(goal));
+  $('stats').classList.toggle('goal-met',met);
+  const mood=t.sec<60?["You're just getting started",'🌱']:met?['Daily goal reached!','🎉']:ratio>=.8?['Almost there, so close','💫']:ratio>=.5?["You're halfway there!",'🌷']:['Nice work today','✨'];
+  setText($('moodText'),mood[0]);setText($('moodIcon'),mood[1]);
+  const ct=currentTask();setText($('mTask'),ct?fmtDur(ct.sec||0):'—');setText($('mTaskName'),ct?ct.text:'No task started');
+  setText($('todayDate'),new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}));
+  // last 7 days
+  const days=[];let weekSec=0,metDays=0;
+  for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const s=(hist[dayKey(d)]||{}).sec||0;weekSec+=s;if(s>=goalSec)metDays++;
+    days.push({n:i===0?'Today':DAY_NAMES[d.getDay()],full:i===0?'Today':d.toLocaleDateString(undefined,{weekday:'long'}),sec:s,now:i===0})}
+  setText($('mWeek'),fmtDur(weekSec));setText($('weekGoalDays'),metDays?metDays+' of 7 days at goal':'Daily goal: '+fmtGoal(goal));
+  const key=days.map(d=>d.sec).join(',')+'|'+goal;
+  if(key!==chartKey){chartKey=key;
+    const max=Math.max(goalSec,3600,...days.map(d=>d.sec))*1.2;
+    $('goalLine').style.bottom=(goalSec/max*100).toFixed(1)+'%';
+    $('bars').innerHTML=days.map(d=>{const h=Math.max(2,d.sec/max*100).toFixed(1);
+      return '<div class="bcol'+(d.now?' now':'')+(d.sec>=goalSec?' met':'')+'"><span class="bval" style="bottom:calc('+h+'% + 6px)">'+fmtBar(d.sec)+'</span><span class="bar" style="height:'+h+'%"></span></div>'}).join('');
+    $('dayNames').innerHTML=days.map(d=>'<span'+(d.now?' class="now"':'')+'>'+d.n+'</span>').join('');
+    $('chart').setAttribute('aria-label','Study time, last 7 days: '+days.map(d=>d.full+' '+fmtDur(d.sec)).join(', '));
+  }
+  // celebrate once per day (and again only if the goal itself changes)
+  if(met&&t.goalHit!==goal){t.goalHit=goal;save();if(historyReady)celebrateGoal()}
+  historyReady=true;
+  updateQuickStart();
+}
+function celebrateGoal(){
+  react('goal');
+  burstFrom($('stage'),{n:26,spread:160,chars:['✦','♡','✧','⭐'],size:18,dur:1400});
+  burstFrom($('goalTrack'),{n:12,spread:70,colors:['#F1D3A6','#FFF1D6','#E8B7CB']});
+  toast('Daily goal reached! Wonderful work today 🎉',{tone:'ok',ms:5500});
+  if(connected){lastMessage='Goal reached! ⭐';send('M'+toLamp(lastMessage))}
+}
+
+/* =====================================================================
+   6. TO-DO LIST (one list per day, stored inside the history object)
+   ===================================================================== */
+const PRI_RANK={high:0,med:1,low:2},PRI_LABEL={high:'High',med:'Medium',low:'Low'},PRI_CYCLE=['high','med','low'];
+const priOf=x=>x.pri in PRI_RANK?x.pri:'med';   // older tasks have no priority → Medium
+function tasks(){const t=today();if(!t.tasks)t.tasks=[];return t.tasks}
+function currentTask(){const t=today();return tasks().find(x=>x.id===t.current&&!x.done)||null}
+function lampText(s){return s.replace(/[^\x20-\x7E]/g,'').trim().slice(0,21)}
+function sendTask(){const c=currentTask();send('K'+(c?lampText(c.text):''))}
+function addTask(text,pri){text=text.trim();if(!text)return false;const id=Date.now()+Math.random();
+  tasks().push({id,text,done:false,sec:0,pri});lastAddedId=id;save();renderTodos();return true}
+function setDoing(id){const t=today(),picking=t.current!==id;t.current=picking?id:null;save();sendTask();renderTodos();renderHistory();if(picking)react('taskPick')}
+function toggleDone(id){const t=today(),x=tasks().find(k=>k.id===id);if(!x)return;x.done=!x.done;
+  if(x.done&&t.current===id){t.current=null;sendTask();send('MTask done!')}
+  save();renderTodos();renderHistory();if(x.done)react('taskDone')}
+function removeTask(id){
+  const t=today(),list=tasks(),idx=list.findIndex(k=>k.id===id);if(idx<0)return;
+  const item=list[idx],wasCurrent=t.current===id;
+  t.tasks=list.filter(k=>k.id!==id);if(wasCurrent){t.current=null;sendTask()}save();renderTodos();renderHistory();
+  toast('Task deleted',{action:{label:'Undo',fn:()=>{tasks().splice(Math.min(idx,tasks().length),0,item);if(wasCurrent){today().current=id;sendTask()}save();renderTodos();renderHistory()}}});
+}
+function cyclePri(id){const x=tasks().find(k=>k.id===id);if(!x)return;x.pri=PRI_CYCLE[(PRI_CYCLE.indexOf(priOf(x))+1)%3];save();renderTodos()}
+function lastUnfinished(){const k=dayKey(new Date());const keys=Object.keys(hist).filter(d=>d<k&&hist[d].tasks&&hist[d].tasks.some(x=>!x.done)).sort();
+  return keys.length?keys[keys.length-1]:null}
+const ICON_PLAY='<svg width="11" height="11" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16l13-8z" fill="currentColor"/></svg>';
+const ICON_CLOCK='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+const ICON_X='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+function taskEl(x,cur){
+  const on=x.id===cur&&!x.done,p=priOf(x);
+  const li=document.createElement('li');li.className='task pri-'+p+(x.done?' done':'')+(on?' doing':'')+(x.id===lastAddedId?' enter':'');li.dataset.id=x.id;
+  const cb=document.createElement('input');cb.type='checkbox';cb.className='check';cb.checked=x.done;cb.dataset.role='check';
+  cb.setAttribute('aria-label',(x.done?'Mark as not done: ':'Mark as done: ')+x.text);
+  cb.onchange=()=>{if(cb.checked){li.classList.add('completing');burstFrom(cb,{n:8,spread:44,size:12});setTimeout(()=>toggleDone(x.id),calm()?0:520)}else toggleDone(x.id)};
+  const body=document.createElement('div');body.className='tbody';
+  const tx=document.createElement('div');tx.className='ttext';const sp=document.createElement('span');sp.textContent=x.text;tx.append(sp);
+  const meta=document.createElement('div');meta.className='tmeta';
+  const pb=document.createElement('button');pb.type='button';pb.className='pri-tag';pb.dataset.role='pri';
+  pb.innerHTML='<i class="pdot '+p+'"></i>'+PRI_LABEL[p];pb.setAttribute('aria-label','Priority '+PRI_LABEL[p]+'. Change priority');pb.onclick=()=>cyclePri(x.id);
+  const mn=document.createElement('span');mn.className='tmins';mn.innerHTML=x.sec>=60?ICON_CLOCK+'<span></span>':'';if(x.sec>=60)mn.lastChild.textContent=fmtDur(x.sec);
+  meta.append(pb,mn);
+  if(on){const nb=document.createElement('span');nb.className='now-badge';nb.textContent='Current task';meta.append(nb)}
+  body.append(tx,meta);li.append(cb,body);
+  if(!x.done){const b=document.createElement('button');b.type='button';b.className='start-btn';b.dataset.role='start';b.setAttribute('aria-pressed',on);
+    b.innerHTML=on?'<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>Studying':ICON_PLAY+'Start';
+    b.setAttribute('aria-label',on?'Stop studying '+x.text:'Start '+x.text);b.onclick=()=>setDoing(x.id);li.append(b)}
+  const d=document.createElement('button');d.type='button';d.className='icon-btn del';d.dataset.role='del';d.innerHTML=ICON_X;d.setAttribute('aria-label','Delete task: '+x.text);
+  d.onclick=()=>{if(calm()){removeTask(x.id);return}li.classList.add('removing');setTimeout(()=>removeTask(x.id),220)};
+  li.append(d);return li;
+}
+function renderTodos(){
+  // remember keyboard focus so re-rendering doesn't lose your place
+  const a=document.activeElement,fli=a&&a.closest?a.closest('.task'):null,fid=fli?fli.dataset.id:null,frole=a&&a.dataset?a.dataset.role:null;
+  const cur=today().current,all=tasks();
+  const active=all.map((x,i)=>[x,i]).filter(([x])=>!x.done)
+    .sort(([a,ia],[b,ib])=>((b.id===cur)-(a.id===cur))||(PRI_RANK[priOf(a)]-PRI_RANK[priOf(b)])||(ia-ib)).map(p=>p[0]);
+  const done=all.filter(x=>x.done);
+  $('todos').replaceChildren(...active.map(x=>taskEl(x,cur)));
+  $('doneList').replaceChildren(...done.map(x=>taskEl(x,cur)));
+  lastAddedId=null;
+  $('doneWrap').hidden=!done.length;setText($('doneCount'),done.length);
+  $('todoEmpty').hidden=all.length>0;$('allDone').hidden=!(all.length&&!active.length);
+  setText($('taskSummary'),all.length?active.length+' to go, '+done.length+' done':'Plan what you\'ll study');
+  if(fid&&frole){const t=document.querySelector('.task[data-id="'+CSS.escape(fid)+'"] [data-role="'+frole+'"]');if(t)t.focus({preventScroll:true})}
+  const prev=lastUnfinished(),cb=$('carryBtn');
+  if(prev&&!today().carried){const n=hist[prev].tasks.filter(x=>!x.done).length;cb.hidden=false;
+    cb.textContent='Bring back '+n+' unfinished task'+(n===1?'':'s')+' from '+new Date(prev+'T12:00').toLocaleDateString(undefined,{weekday:'long'})}
+  else cb.hidden=true;
+  nowTaskKey='';renderNowTask();updateQuickStart();
+}
+// Cheap update used while studying: only touch the time labels
+function updateTaskTimes(){
+  document.querySelectorAll('.task').forEach(li=>{const x=tasks().find(k=>String(k.id)===li.dataset.id);if(!x||x.sec<60)return;
+    const mn=li.querySelector('.tmins');if(!mn.firstChild){mn.innerHTML=ICON_CLOCK+'<span></span>'}setText(mn.lastChild,fmtDur(x.sec))});
+}
+
+/* =====================================================================
+   7. QUICK START (tiny onboarding that ticks itself off)
+   ===================================================================== */
+function qsSave(){if(demoOn)return;store.set(QS_KEY,JSON.stringify(qs))}
+function qsMark(k){if(!qs[k]){qs[k]=true;qsSave();updateQuickStart()}}
+const QS_STEPS=[
+  {h:'Plug in the USB cable and press Connect lamp.',done:()=>connected},
+  {h:'Write what you want to study today in the task list.',done:()=>tasks().length>0},
+  {h:'Pick 25, 40, 50 or 60 minutes (or your own) in Session settings.',done:()=>!!qs.focus},
+  {h:'Press Start on a task so its study time is tracked.',done:()=>!!currentTask()||tasks().some(x=>x.sec>0||x.done)},
+  {h:'Sit at your desk. The lamp starts the timer when it sees you.',done:()=>!!qs.studied||today().sec>0},
+  {h:'When a session ends, step away for a bit. The hamster gets a snack too.',done:()=>!!qs.rested},
+  {h:"Watch today's total and your week fill up in Your progress.",done:()=>(today().pomos||0)>0}
+];
+function updateQuickStart(){
+  const hidden=!!qs.hidden;$('quick').hidden=hidden;$('qsShow').hidden=!hidden;if(hidden)return;
+  const done=QS_STEPS.map(s=>{try{return !!s.done()}catch(e){return false}}),cur=done.indexOf(false),key=done.join()+cur;
+  if(key===qsKey)return;qsKey=key;
+  $('qsSteps').querySelectorAll('li').forEach((li,i)=>{li.classList.toggle('done',done[i]);li.classList.toggle('current',i===cur);
+    if(i===cur)li.setAttribute('aria-current','step');else li.removeAttribute('aria-current');
+    li.querySelector('.qs-sr').textContent=done[i]?' (done)':''});
+  setText($('qsHint'),cur<0?"You're all set ✨ You can hide this guide any time.":'Next: '+QS_STEPS[cur].h);
+  if(cur>0){const li=$('qsSteps').children[cur];const box=$('qsSteps');if(li.offsetLeft<box.scrollLeft||li.offsetLeft+li.offsetWidth>box.scrollLeft+box.clientWidth)box.scrollLeft=li.offsetLeft-12}
+}
+$('qsHide').onclick=()=>{qs.hidden=true;qsSave();updateQuickStart();$('qsShow').focus()};
+$('qsShow').onclick=()=>{qs.hidden=false;qsSave();qsKey='';updateQuickStart();$('qsHide').focus()};
+
+/* =====================================================================
+   8. USB CONNECTION (Web Serial, 115200 baud — protocol unchanged)
+   Lamp → page:  S,mode,focusDone,focusMin,breakMin,modeSec,dist,pomos,today,here,overlay,pending   |   E,DONE
+   Page → lamp:  A<sec> ack · K<task> · F<min> · B<min> · M<note> · T tune
+   ===================================================================== */
+const CONN_UI={offline:['Lamp not connected','USB cable + Chrome or Edge'],connecting:['Connecting…','Pick the lamp in the pop-up'],
+  waiting:['Connected','Waiting for the lamp…'],online:['Lamp connected','Live over USB'],demo:['Demo lamp','Pretend lamp · nothing is saved']};
+function updateConnUI(){
+  $('demoBtn').hidden=connected||connecting;
+  const s=demoOn?'demo':connecting?'connecting':!connected?'offline':(!st||performance.now()-stAt>4000)?'waiting':'online';
+  if(s===connShown)return;const was=connShown;connShown=s;
+  const c=$('conn');c.dataset.state=s;setText($('connText'),CONN_UI[s][0]);setText($('connSub'),CONN_UI[s][1]);
+  const b=$('connectBtn');setText($('connectLabel'),demoOn?'Exit demo':connected?'Disconnect':connecting?'Connecting…':'Connect lamp');
+  b.classList.toggle('ghost',connected);b.disabled=connecting||(!demoOn&&!('serial' in navigator));
+  if(s==='online'&&was!=='online'){c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop')}
+}
+function setConnected(on){connected=on;
+  document.querySelectorAll('.lamp-only').forEach(b=>b.disabled=!on);
+  $('ctrlHint').hidden=on;$('msgHint').hidden=on;
+  if(!on){st=null;ackUntil=0;prevMode=-1;markChips()}
+  updateConnUI();updateQuickStart()}
+
+async function sessionRequest(path, body){
+  try { const r=await fetch(path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}); return await r.json(); }
+  catch(e){ return {ok:false,error:e.message}; }
+}
+async function beginStudySession(){
+  if(studySessionId)return;
+  const c=activeCourse();
+  const data=await sessionRequest('/api/session/start',{courseId:c?.id||null,courseName:c?.name||null,focusMin:st?.focusMin||0});
+  if(data.ok){studySessionId=data.sessionId;studySessionStartedAt=Date.now();$('sessionReportBtn').disabled=true;setText($('sessionReportText'),'AI is tracking this physical study session.');}
+}
+function sessionEvent(type,data={}){
+  if(!studySessionId)return;
+  sessionRequest('/api/session/event',{sessionId:studySessionId,type,data,chat:aiTurns?.slice(-12)||[]});
+}
+async function finishStudySession(reason='completed'){
+  if(!studySessionId)return;
+  const id=studySessionId;studySessionId=null;
+  const data=await sessionRequest('/api/session/end',{sessionId:id,data:{reason,focusDone:st?.focusDone||0,focusMin:st?.focusMin||0,pomos:st?.pomos||0,quiz:quizStats},chat:aiTurns?.slice(-12)||[]});
+  quizStats=freshQuizStats();   // the next session starts with a clean quiz record
+  if(data.ok){lastSessionReport=data.report||'';$('sessionReportBtn').disabled=false;$('sessionReportBtn').onclick=()=>showSessionReport(lastSessionReport);setText($('sessionReportText'),'Session complete — your AI study report is ready.');toast('AI study report ready ✦',{tone:'ok',ms:5000});}
+  else setText($('sessionReportText'),'Session ended. The AI report could not be generated yet.');
+}
+function showSessionReport(report){
+  const text=String(report||'No report available.');
+  aiShow();
+  aiBubble('bot','SESSION REPORT\n\n'+text.replace(/^SESSION REPORT\s*/i,''));
+  document.getElementById('buddy')?.scrollIntoView({behavior:calm()?'auto':'smooth',block:'start'});
+}
+
+function handleLine(line){
+  const p=line.trim().split(',');
+  if(p[0]==='S'&&p.length>=12){const n=p.slice(1).map(Number);
+    st={mode:n[0],focusDone:n[1],focusMin:n[2],breakMin:n[3],modeSec:n[4],dist:n[5],pomos:n[6],today:n[7],here:!!n[8],overlay:n[9],pending:n[10]};
+    stAt=performance.now();
+    if(st.mode!==prevMode){const from=prevMode;prevMode=st.mode;step=0;stepStart=stAt;lidNow=0;if(from!==-1)onModeChange(from,st.mode)}
+    if(st.mode===4)qsMark('studied');if(st.mode===6)qsMark('rested');
+    if(msgWait&&st.overlay===2){msgWait=0;setMsgStatus('Showing on the lamp now ✓','ok');burstFrom($('lampScreen'),{n:8,spread:50,size:12})}
+    if(needSync){needSync=false;sendTask()}
+    trackTime();markChips()}
+  else if(p[0]==='E'&&p[1]==='DONE'){today().pomos++;save();renderHistory()}
+}
+// Micro-celebrations when the lamp changes state
+function onModeChange(from,to){
+  const stage=$('stage');
+  if(to===4){react(from===1?'back':'start');if(from!==1)burstFrom(stage,{n:10,spread:100});if(from!==1)beginStudySession();else sessionEvent('returned_to_desk')}
+  else if(to===1){sessionEvent('stepped_away',{focusedSeconds:st?.focusDone||0})}
+  else if((to===0||to===2)&&from===1){finishStudySession('left_desk')}   // gave up mid-session: still close it and write the report
+  else if(to===5){sessionEvent('focus_completed',{focusedSeconds:st?.focusDone||0});burstFrom(stage,{n:24,spread:160,chars:['✦','♡','✧','⭐'],size:18,dur:1400});toast('Session complete. Well done ✨',{tone:'ok'});finishStudySession('completed')}
+  else if(to===6&&from!==6){sessionEvent('break_started');react('yawn');toast('Break time. Stretch and sip some water 💧')}
+}
+function fillInputs(){if(!st)return;const a=document.activeElement;
+  if(![$('fH'),$('fM')].includes(a)){$('fH').value=Math.floor(st.focusMin/60);$('fM').value=st.focusMin%60}
+  if(a!==$('bM'))$('bM').value=st.breakMin}
+function markChips(){
+  fillInputs();const k=st?st.focusMin+'/'+st.breakMin:'-';if(k===chipKey)return;chipKey=k;
+  let fHit=false,bHit=false;
+  document.querySelectorAll('[data-focus]').forEach(b=>{const on=!!st&&+b.dataset.focus===st.focusMin;fHit=fHit||on;b.setAttribute('aria-pressed',on)});
+  document.querySelectorAll('[data-break]').forEach(b=>{const on=!!st&&+b.dataset.break===st.breakMin;bHit=bHit||on;b.setAttribute('aria-pressed',on)});
+  $('focusCustom').classList.toggle('is-active',!!st&&!fHit);$('breakCustom').classList.toggle('is-active',!!st&&!bHit);
+  setText($('focusVal'),st?fmtMin(st.focusMin)+(fHit?'':' (custom)'):'—');setText($('breakVal'),st?fmtMin(st.breakMin)+(bHit?'':' (custom)'):'—');
+}
+
+async function connect(){
+  connecting=true;updateConnUI();
+  try{port=await navigator.serial.requestPort();await port.open({baudRate:115200})}
+  catch(e){connecting=false;
+    if(e.name!=='NotFoundError')toast('Could not open the lamp. Close the Arduino Serial Monitor and try again.',{tone:'err',ms:7000});
+    port=null;updateConnUI();return}
+  connecting=false;
+  writer=port.writable.getWriter();setConnected(true);needSync=true;
+  toast('Lamp connected ♡',{tone:'ok'});react('hello');
+  const dec=new TextDecoderStream();readDone=port.readable.pipeTo(dec.writable).catch(()=>{});reader=dec.readable.getReader();
+  let pending='';
+  try{while(true){const{value,done}=await reader.read();if(done)break;pending+=value;let i;
+    while((i=pending.indexOf('\n'))>=0){handleLine(pending.slice(0,i));pending=pending.slice(i+1)}}}
+  catch(e){}
+  await disconnect(true);
+}
+// fromLoop: the read loop ended on its own · lost: the USB device vanished
+async function disconnect(fromLoop,lost){
+  const p=port;port=null;if(!p)return;
+  try{if(!fromLoop&&reader)await reader.cancel()}catch(e){}
+  try{await readDone}catch(e){}
+  try{writer&&writer.releaseLock()}catch(e){}
+  try{await p.close()}catch(e){}
+  reader=null;writer=null;setConnected(false);
+  if(fromLoop||lost)toast('Lost the lamp connection. Plug it back in and press Connect lamp.',{tone:'warn',ms:6000});
+  else toast('Lamp disconnected. See you soon ♡');
+}
+async function send(text){if(demoOn)return demoCmd(text);if(!writer)return false;try{await writer.write(enc.encode(text+'\n'));return true}catch(e){return false}}
+
+if(!('serial' in navigator))$('unsupported').hidden=false;
+$('connectBtn').onclick=()=>{if(demoOn){demoStop();return}if(connecting)return;port?disconnect(false):connect()};
+if('serial' in navigator)navigator.serial.addEventListener('disconnect',e=>{if(e.target===port)disconnect(false,true)});
+
+/* =====================================================================
+   9. SETTINGS CONTROLS
+   ===================================================================== */
+document.querySelectorAll('[data-focus]').forEach(b=>b.onclick=()=>{send('F'+b.dataset.focus);qsMark('focus')});
+document.querySelectorAll('[data-break]').forEach(b=>b.onclick=()=>send('B'+b.dataset.break));
+$('fSet').onclick=()=>{const tot=Math.min(240,Math.max(1,(parseInt($('fH').value)||0)*60+(parseInt($('fM').value)||0)));send('F'+tot);qsMark('focus');flashBtn($('fSet'),'Set ✓')};
+$('bSet').onclick=()=>{send('B'+Math.min(59,Math.max(1,parseInt($('bM').value)||5)));flashBtn($('bSet'),'Set ✓')};
+[$('fH'),$('fM')].forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter'&&!$('fSet').disabled)$('fSet').click()}));
+$('bM').addEventListener('keydown',e=>{if(e.key==='Enter'&&!$('bSet').disabled)$('bSet').click()});
+$('goalH').value=getGoal();
+$('goalSet').onclick=()=>{saveGoal(parseFloat($('goalH').value));flashBtn($('goalSet'),'Saved ✓')};
+$('goalH').addEventListener('keydown',e=>{if(e.key==='Enter')$('goalSet').click()});
+$('goalMinus').onclick=()=>saveGoal(getGoal()-.5);
+$('goalPlus').onclick=()=>saveGoal(getGoal()+.5);
+
+/* =====================================================================
+   10. TASK CONTROLS
+   ===================================================================== */
+$('todoForm').addEventListener('submit',e=>{e.preventDefault();if(addTask($('todoInput').value,newPri))$('todoInput').value='';$('todoInput').focus()});
+document.querySelectorAll('input[name=pri]').forEach(r=>r.addEventListener('change',()=>{if(r.checked)newPri=r.value}));
+$('carryBtn').onclick=()=>{const prev=lastUnfinished();if(!prev)return;
+  hist[prev].tasks.filter(x=>!x.done).forEach(x=>tasks().push({id:Date.now()+Math.random(),text:x.text,done:false,sec:0,pri:priOf(x)}));
+  today().carried=true;save();renderTodos();toast('Unfinished tasks are back on today\'s list')};
+$('ntAction').onclick=()=>{const first=document.querySelector('#todos .start-btn'),target=first||$('todoInput');
+  target.scrollIntoView({behavior:calm()?'auto':'smooth',block:'center'});target.focus({preventScroll:true})};
+$('buddyBtn').onclick=()=>{react('boop');burstFrom($('buddyBtn'),{n:5,spread:60,chars:['♡'],colors:['#E8B7CB','#F6C3CF'],size:14})};
+
+/* =====================================================================
+   11. LAMP NOTES (same M command; emoji become the lamp's icon codes)
+   ===================================================================== */
+const EMO=[['❤️',1],['❤',1],['⭐',2],['😊',3],['💧',4],['✅',5],['🌙',6],['☕',7]];
+const EMO_BACK=['','❤️','⭐','😊','💧','✅','🌙','☕'];
+// Converts text exactly like before; also reports whether anything was cut or dropped (for the preview)
+function lampConvert(t){
+  for(const[e,c]of EMO)t=t.split(e).join(String.fromCharCode(c));
+  const cleaned=t.replace(/[^\x01-\x07\x20-\x7E]/g,''),dropped=cleaned.length!==t.length;t=cleaned.trim();
+  let out='',w=0,cut=false;
+  for(const ch of t){const cw=ch.charCodeAt(0)<8?8:6;if(w+cw>128||out.length>=21){cut=true;break}out+=ch;w+=cw}
+  return{out,w,cut,dropped};
+}
+function toLamp(t){return lampConvert(t).out}
+const fromLamp=s=>[...s].map(ch=>ch.charCodeAt(0)<8?EMO_BACK[ch.charCodeAt(0)]:ch).join('');
+function updateMsgPreview(){
+  const raw=$('msgInput').value,info=lampConvert(raw),scr=$('lampScreen');
+  let text='your note shows up here',mode='empty';
+  if(info.out){text=fromLamp(info.out);mode='draft'}else if(lastSentLamp){text=fromLamp(lastSentLamp);mode='sent'}
+  scr.classList.toggle('is-empty',mode==='empty');$('lampTag').hidden=mode!=='sent';setText($('lampText'),text);
+  $('fitFill').style.width=Math.min(100,info.w/128*100).toFixed(1)+'%';$('fit').classList.toggle('over',info.cut);
+  setText($('fitText'),!raw.trim()?'Up to 21 characters fit on the lamp':info.cut?"The end won't fit on the lamp":info.dropped?"Some emoji can't show on the lamp":'Fits on the lamp ✓');
+}
+let msgStatusT;
+function setMsgStatus(text,tone){const el=$('msgStatus');el.className='msg-status '+(tone||'');setText(el,text);
+  clearTimeout(msgStatusT);if(tone!=='pending')msgStatusT=setTimeout(()=>setText(el,''),6000)}
+async function sendMsg(t,fromEl){
+  const lamp=toLamp(t);if(!lamp){setMsgStatus('Write a note first ✏️','err');$('msgInput').focus();return false}
+  lastMessage=t.trim();
+  if(!(await send('M'+lamp))){setMsgStatus("Couldn't reach the lamp. Check that it's connected.",'err');return false}
+  lastSentLamp=lamp;flyNote(fromEl,$('lampScreen'));
+  setMsgStatus('Sent! Waiting for the lamp…','pending');const w=msgWait=performance.now();
+  setTimeout(()=>{if(msgWait===w){msgWait=0;setMsgStatus('Sent to the lamp ✓','ok')}},3500);
+  return true;
+}
+function addEmoji(e){const inp=$('msgInput');if(toLamp(inp.value+e).length<=toLamp(inp.value).length){setMsgStatus('No room left on the lamp screen','err');return}
+  inp.value+=e;inp.focus();updateMsgPreview()}
+$('msgForm').addEventListener('submit',async e=>{e.preventDefault();if($('msgBtn').disabled)return;
+  if(await sendMsg($('msgInput').value,$('msgBtn'))){$('msgInput').value='';updateMsgPreview();flashBtn($('msgBtn'),'Sent ✓')}});
+$('msgInput').addEventListener('input',updateMsgPreview);
+document.querySelectorAll('[data-quick]').forEach(b=>b.onclick=()=>{sendMsg(b.dataset.quick,b).then(ok=>{if(ok)updateMsgPreview()})});
+document.querySelectorAll('[data-emo]').forEach(b=>b.onclick=()=>addEmoji(b.dataset.emo));
+$('tuneBtn').onclick=async()=>{if(await send('T')){react('sing');burstFrom($('tuneBtn'),{n:6,spread:50,chars:['♪','♫'],size:16})}};
+
+/* =====================================================================
+   12. NOTEBOOK (saved in this browser; titles can be shown on the lamp)
+   ===================================================================== */
+const NB_KEY='omaimaLampNotebook';
+let nb=[];try{nb=JSON.parse(store.get(NB_KEY)||'[]');if(!Array.isArray(nb))nb=[]}catch(e){nb=[]}
+const nbSorted=()=>[...nb].sort((a,b)=>b.updated-a.updated);
+let nbCur=nb.length?nbSorted()[0].id:null,nbSaveT=null,nbQuery='';
+const nbNote=()=>nb.find(n=>n.id===nbCur)||null;
+const nbFirstLine=s=>((s||'').split('\n').find(l=>l.trim())||'').trim();
+function nbStore(){store.set(NB_KEY,JSON.stringify(nb))}
+function nbWhen(ts){const d=new Date(ts);return dayKey(d)===dayKey(new Date())
+  ?d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):d.toLocaleDateString([],{month:'short',day:'numeric'})}
+function renderNbList(){
+  const list=$('nbList'),q=nbQuery.trim().toLowerCase();list.textContent='';
+  const items=nbSorted().filter(n=>!q||(n.title+'\n'+n.body).toLowerCase().includes(q));
+  for(const n of items){
+    const li=document.createElement('li'),b=document.createElement('button');b.type='button';b.className='nb-item';
+    if(n.id===nbCur)b.setAttribute('aria-current','true');
+    const first=nbFirstLine(n.body),t=document.createElement('b');t.textContent=n.title.trim()||first||'Untitled note';
+    const meta=document.createElement('span'),tm=document.createElement('time'),sn=document.createElement('em');
+    tm.textContent=nbWhen(n.updated);sn.textContent=n.title.trim()?first:'';meta.append(tm,sn);
+    b.append(t,meta);b.onclick=()=>nbOpen(n.id);li.append(b);list.append(li);
+  }
+  $('nbNoMatch').hidden=!(q&&!items.length);
+  setText($('nbCount'),nb.length?nb.length+(nb.length===1?' note':' notes')+', saved on this computer':'Your study notes, saved on this computer');
+}
+function nbStats(){const n=nbNote();if(!n)return;const w=(n.body.match(/\S+/g)||[]).length;setText($('nbWords'),w+(w===1?' word':' words'))}
+function renderNbPage(){
+  const n=nbNote();$('nbGrid').hidden=!nb.length;$('nbEmpty').hidden=!!nb.length;$('nbPaper').hidden=!n;if(!n)return;
+  if($('nbTitleIn').value!==n.title)$('nbTitleIn').value=n.title;
+  if($('nbBody').value!==n.body)$('nbBody').value=n.body;
+  nbStats();
+}
+function nbFlush(){if(!nbSaveT)return;clearTimeout(nbSaveT);nbSaveT=null;nbStore();setText($('nbSaved'),'Saved');renderNbList()}
+function nbEdit(){const n=nbNote();if(!n)return;n.title=$('nbTitleIn').value;n.body=$('nbBody').value;n.updated=Date.now();
+  setText($('nbSaved'),'Saving…');clearTimeout(nbSaveT);nbSaveT=setTimeout(()=>{nbSaveT=1;nbFlush()},400);nbStats()}
+function nbOpen(id){nbFlush();nbCur=id;renderNbList();renderNbPage();$('nbBody').focus()}
+function nbNew(){nbFlush();const n={id:Date.now()+Math.random(),title:'',body:'',updated:Date.now()};nb.push(n);nbCur=n.id;
+  nbQuery='';$('nbSearch').value='';nbStore();renderNbList();renderNbPage();$('nbTitleIn').focus()}
+function nbDelete(){
+  const n=nbNote();if(!n)return;nbFlush();const idx=nb.indexOf(n);nb.splice(idx,1);
+  const next=nbSorted()[0];nbCur=next?next.id:null;nbStore();renderNbList();renderNbPage();
+  toast('Note deleted',{action:{label:'Undo',fn:()=>{nb.splice(Math.min(idx,nb.length),0,n);nbCur=n.id;nbStore();renderNbList();renderNbPage()}}});
+}
+$('nbNew').onclick=nbNew;
+$('nbTitleIn').addEventListener('input',nbEdit);
+$('nbBody').addEventListener('input',nbEdit);
+$('nbTitleIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('nbBody').focus()}});
+$('nbSearch').addEventListener('input',()=>{nbQuery=$('nbSearch').value;renderNbList()});
+$('nbDelete').onclick=nbDelete;
+$('nbLamp').onclick=async()=>{
+  const n=nbNote();if(!n)return;const text=n.title.trim()||nbFirstLine(n.body),lamp=toLamp(text);
+  if(!lamp){flashBtn($('nbLamp'),'Add a title first');return}
+  lastMessage=text;
+  if(await send('M'+lamp)){lastSentLamp=lamp;updateMsgPreview();flashBtn($('nbLamp'),'Sent ✓')}
+  else flashBtn($('nbLamp'),"Couldn't reach the lamp");
+};
+window.addEventListener('beforeunload',nbFlush);
+renderNbList();renderNbPage();
+
+/* =====================================================================
+   13. STUDY BUDDY + COURSE LIBRARY — talks to the study server (server/), never to the AI directly
+   ===================================================================== */
+const LIB_KEY='omaima_course_library_v1';
+const AI_RULES="You are Omaima's kind, patient study buddy. Teach from the student's uploaded course material when available. Clearly distinguish what comes from their material from general knowledge. Do not invent facts or citations. Explain simply, use examples, and check understanding. When quizzing, ask one question at a time and wait for the answer. Keep answers focused and practical. Plain text is preferred.";
+let aiMode='checking',aiTurns=[],aiBusy=false,aiCtl=null,aiServer=false,aiPractice=false;
+function libraryData(){try{const x=JSON.parse(store.get(LIB_KEY)||'[]');return Array.isArray(x)?x:[]}catch(e){return[]}}
+function saveLibrary(x){store.set(LIB_KEY,JSON.stringify(x))}
+function activeCourse(){return libraryData().find(x=>x.active)||libraryData()[0]||null}
+function renderLibrary(){const courses=libraryData(),active=activeCourse();setText($('courseCount'),courses.length+' course'+(courses.length===1?'':'s'));$('libraryEmpty').hidden=!!courses.length;$('libraryTools').hidden=!active;$('activeCourseName').textContent=active?active.name:'—';$('activeCourseFiles').textContent=active?((active.files||[]).length+' file'+((active.files||[]).length===1?'':'s')):'0 files';$('courseList').innerHTML=courses.map(c=>'<button type="button" class="course-item '+(c.active?'active':'')+'" data-course="'+escapeHtml(c.id)+'"><span class="course-icon">'+(c.icon||'📘')+'</span><span class="grow"><b>'+escapeHtml(c.name)+'</b><small>'+((c.files||[]).length)+' file'+((c.files||[]).length===1?'':'s')+'</small></span><span class="course-check">'+(c.active?'✓':'')+'</span></button>').join('')}
+function setActiveCourse(id){const c=libraryData().map(x=>({...x,active:x.id===id}));saveLibrary(c);renderLibrary();aiShow()}
+async function checkAIServer(){try{const r=await fetch('/api/status');const d=await r.json();aiServer=!!d.ok;aiPractice=!!d.practice;$('libraryStatus').textContent=aiPractice?'Practice mode':aiServer?'AI connected':'Server offline';$('libraryStatus').className='library-status '+(aiServer?'online':'');$('aiServerDot').className='status-dot '+(aiServer?'online':'');$('aiServerText').textContent=aiServer?'Study buddy is ready to use your library.':'Start the study server to connect the AI.';aiMode=aiServer?'openai':'setup'}catch(e){aiServer=false;aiMode='setup';$('libraryStatus').textContent='AI not connected';$('aiServerDot').className='status-dot';$('aiServerText').textContent='Study server not found. The rest of the app still works locally.'}aiShow()}
+function aiShow(){ $('aiChecking').hidden=true;$('aiSetup').hidden=aiServer;$('aiReady').hidden=!aiServer;$('aiClear').hidden=!aiTurns.length;const c=activeCourse();setText($('aiMode'),!aiServer?'':aiPractice?'Practice mode: pretend answers, not the real AI. Add your Gemini key for the real AI.':(c?'Using: '+c.name:'Using your notes — add a course for source-grounded answers.'));$('aiMode').classList.toggle('practice-note',aiPractice);document.querySelectorAll('[data-ai]').forEach(b=>{b.disabled=aiBusy||!aiServer;b.title=aiServer?'':'Start the study server first'});$('aiSend').disabled=aiBusy||!aiServer}
+function aiBubble(role,text,cls=''){const hello=$('aiHello');if(hello)hello.remove();const d=document.createElement('div');d.className='ai-msg '+role+(cls?' '+cls:'');d.textContent=text;$('aiLog').append(d);$('aiLog').scrollTop=$('aiLog').scrollHeight;return d}
+function aiTools(bubble,text){const row=document.createElement('div');row.className='ai-msg-tools';const save=document.createElement('button');save.type='button';save.textContent='Save to notebook';save.onclick=()=>{let n=nbNote();if(!n){nbNew();n=nbNote();n.title='Study buddy notes'}n.body=(n.body.trim()?n.body.replace(/\s+$/,'')+'\n\n':'')+text.trim();n.updated=Date.now();nbStore();renderNbList();renderNbPage();save.textContent='Saved ✓';save.disabled=true;toast('Added to "'+(n.title.trim()||'your note')+'"',{tone:'ok'})};const copy=document.createElement('button');copy.type='button';copy.textContent='Copy';copy.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(text).then(()=>{copy.textContent='Copied ✓'},()=>{})};row.append(save,copy);bubble.append(row)}
+async function aiAsk(userText,shown){if(aiBusy||!userText.trim()||!aiServer)return;aiBusy=true;aiShow();aiBubble('me',shown||userText);aiTurns.push({role:'user',content:userText});sessionEvent('ai_question',{text:userText});const bubble=aiBubble('bot','Thinking…','thinking');aiCtl=new AbortController();try{const c=activeCourse();const res=await fetch('/api/chat',{method:'POST',signal:aiCtl.signal,headers:{'content-type':'application/json'},body:JSON.stringify({message:userText,courseId:c?.id||null,history:aiTurns.slice(-12),note:aiNoteText(),system:AI_RULES})});const data=await res.json();if(!res.ok)throw new Error(data.error||'The study buddy could not answer.');const text=(data.text||'').trim();if(!text)throw new Error('No answer returned.');bubble.classList.remove('thinking');bubble.textContent=text;aiTools(bubble,text);aiTurns.push({role:'assistant',content:text});sessionEvent('ai_answer',{text:text.slice(0,1200)})}catch(e){aiTurns.pop();bubble.classList.remove('thinking');bubble.classList.add('err');bubble.textContent=e.name==='AbortError'?'Cancelled':'Something went wrong: '+(e.message||'Check the study server and try again.')}finally{aiBusy=false;aiCtl=null;aiShow();$('aiLog').scrollTop=$('aiLog').scrollHeight}}
+function aiNoteText(){const n=nbNote();return n?('Title: '+(n.title.trim()||'(no title)')+'\n\n'+n.body.trim()):''}
+const AI_PROMPTS={explain:n=>'Explain my current note clearly and connect it to my active course when relevant:\n\n'+n,quiz:n=>'Quiz me on my active course and current note. Ask one question at a time and wait for my answer.',summary:n=>'Summarize the active course material and my current note into the key points I need to remember.',simple:n=>'Make my current note simpler without losing important course terminology.',flashcards:n=>'Create 10 useful flashcards from my active course. Format each as Q: and A: and focus on concepts likely to matter in an exam.',weak:n=>'My quiz results this session: '+quizResultText()+'\nBased on these results, my recent chat and my active course, name my weak areas and give me a short review plan.'};
+const AI_LABEL={explain:'Explain my note',quiz:'Quiz me',summary:'Summarize course',simple:'Make it simpler',flashcards:'Make flashcards',weak:'Find weak areas'};
+document.querySelectorAll('[data-ai]').forEach(b=>b.onclick=()=>{const k=b.dataset.ai;if(k==='quiz'){quizStart();return}const n=aiNoteText();aiAsk(AI_PROMPTS[k](n),AI_LABEL[k])});
+/* ---------- QUIZ → WEAK SPOT → LAMP ----------
+   The AI writes one question at a time, each tagged with a topic.
+   A topic becomes a "weak spot" when it has been missed more often than got right.
+   New weak spots go straight to the lamp screen as "REVIEW: TOPIC". */
+const QUIZ_LEN=5;
+let quiz=null;                              // the quiz in progress: {n, asked, current}
+function freshQuizStats(){return{asked:0,correct:0,topics:{},weak:[]}}
+let quizStats=freshQuizStats();             // this study session's quiz record (goes into the session report)
+function weakTopics(){return quizStats.weak.slice()}
+function quizResultText(){if(!quizStats.asked)return'no quiz answers yet.';
+  return quizStats.correct+'/'+quizStats.asked+' correct. '+Object.entries(quizStats.topics).map(([k,t])=>k+': '+t.right+' right, '+t.wrong+' wrong').join('; ')+'. Weak: '+(quizStats.weak.join(', ')||'none')}
+function renderQuizBar(){if(!quiz)return;
+  setText($('quizScore'),'Question '+Math.min(quiz.n||1,QUIZ_LEN)+' of '+QUIZ_LEN+' · '+quizStats.correct+'/'+quizStats.asked+' correct');
+  setText($('quizWeak'),quizStats.weak.length?'Weak spot: '+quizStats.weak.join(', '):'')}
+async function aiPost(path,body){const res=await fetch(path,{method:'POST',signal:aiCtl.signal,headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+  let data={};try{data=await res.json()}catch(e){}if(!res.ok)throw new Error(data.error||'The study buddy could not answer.');return data}
+function aiFail(bubble,e){bubble.classList.remove('thinking');bubble.classList.add('err');
+  bubble.textContent=e.name==='AbortError'?'Cancelled':'Something went wrong: '+(e.message||'Check the study server and try again.')}
+function quizStart(){if(aiBusy||!aiServer)return;quiz={n:0,asked:[],current:null,missed:[],startCorrect:quizStats.correct,startAsked:quizStats.asked};
+  $('quizBar').hidden=false;renderQuizBar();aiBubble('me','Quiz me');sessionEvent('quiz_started');quizNext()}
+function quizStop(){quiz=null;$('quizBar').hidden=true;$('aiInput').placeholder='Ask a question… (Enter to send, Shift+Enter for a new line)'}
+async function quizNext(){if(!quiz)return;aiBusy=true;aiShow();const bubble=aiBubble('bot','Writing a question…','thinking');aiCtl=new AbortController();
+  try{const c=activeCourse();
+    const d=await aiPost('/api/quiz/question',{courseId:c?.id||null,note:aiNoteText(),weakTopics:weakTopics(),asked:quiz.asked});
+    if(!quiz)return;quiz.n++;quiz.current=d;quiz.asked.push(d.question);
+    bubble.classList.remove('thinking');bubble.textContent='Question '+quiz.n+' of '+QUIZ_LEN+' · '+d.topic+'\n\n'+d.question;
+    aiTurns.push({role:'assistant',content:'Quiz question ('+d.topic+'): '+d.question});
+    $('aiInput').placeholder='Type your answer… (Enter to send)';renderQuizBar();
+  }catch(e){aiFail(bubble,e);quizStop()}
+  finally{aiBusy=false;aiCtl=null;aiShow();if(quiz&&quiz.current)$('aiInput').focus();$('aiLog').scrollTop=$('aiLog').scrollHeight}}
+async function quizAnswer(text){const q=quiz.current;if(!q||aiBusy)return;aiBubble('me',text);aiBusy=true;aiShow();
+  const bubble=aiBubble('bot','Checking your answer…','thinking');aiCtl=new AbortController();let next=false;
+  try{const c=activeCourse();
+    const d=await aiPost('/api/quiz/grade',{courseId:c?.id||null,question:q.question,answer:q.answer,studentAnswer:text,topic:q.topic});
+    bubble.classList.remove('thinking');bubble.classList.add(d.correct?'good':'bad');
+    bubble.textContent=(d.correct?'✓ Correct! ':'✗ Not quite. ')+d.feedback;
+    aiTurns.push({role:'user',content:'My answer: '+text},{role:'assistant',content:(d.correct?'Correct. ':'Incorrect. ')+d.feedback});
+    sessionEvent('quiz_answer',{topic:q.topic,correct:!!d.correct});
+    recordAnswer(q.topic,!!d.correct);if(!d.correct&&!quiz.missed.includes(q.topic))quiz.missed.push(q.topic);quiz.current=null;renderQuizBar();
+    if(quiz.n>=QUIZ_LEN)quizFinish();else next=true;
+  }catch(e){aiFail(bubble,e)}
+  finally{aiBusy=false;aiCtl=null;aiShow();$('aiLog').scrollTop=$('aiLog').scrollHeight}
+  if(next)quizNext()}
+function recordAnswer(topic,correct){const key=(topic||'General').trim();
+  const t=quizStats.topics[key]||(quizStats.topics[key]={right:0,wrong:0});
+  correct?t.right++:t.wrong++;quizStats.asked++;if(correct)quizStats.correct++;
+  const weakNow=t.wrong>t.right,flagged=quizStats.weak.includes(key);
+  if(weakNow&&!flagged){quizStats.weak.push(key);flagWeak(key)}
+  else if(!weakNow&&flagged){quizStats.weak=quizStats.weak.filter(x=>x!==key);toast(key+' is getting stronger 💪',{tone:'ok'})}}
+function flagWeak(topic){sessionEvent('weak_area',{topic});
+  if(connected){sendMsg('REVIEW: '+topic.toUpperCase(),$('quizBar'));toast('Weak spot found: '+topic+'. Sent to your lamp 💡')}
+  else toast('Weak spot found: '+topic)}
+function quizFinish(){const asked=quizStats.asked-quiz.startAsked,right=quizStats.correct-quiz.startCorrect,pct=asked?Math.round(right/asked*100):0;
+  const w=quizStats.weak;
+  aiBubble('bot','Quiz done: '+right+'/'+asked+' correct ('+pct+'%).\n\n'+(w.length
+    ?'Weak spot'+(w.length>1?'s: ':': ')+w.join(', ')+(connected?'. It\'s on your lamp now.':'.')+'\nNext: spend 15 minutes reviewing '+w[0]+', then quiz again.'
+    :quiz.missed.length?'You missed '+quiz.missed.join(', ')+' at first but got it right after 💪 A quick review next session will lock it in.'
+    :'No weak spots this round 🎉 Try a harder chapter next time.'));
+  aiTurns.push({role:'assistant',content:'Quiz finished: '+right+'/'+asked+'. Weak: '+(w.join(', ')||'none')});
+  sessionEvent('quiz_finished',{asked,correct:right,weak:w});quizStop()}
+$('quizEnd').onclick=()=>{if(!quiz)return;if(aiCtl)aiCtl.abort();const answered=quizStats.asked-quiz.startAsked;if(answered){quizFinish()}else quizStop()};
+
+$('aiForm').addEventListener('submit',e=>{e.preventDefault();const v=$('aiInput').value;if(!v.trim())return;$('aiInput').value='';$('aiInput').style.height='';if(quiz&&quiz.current)quizAnswer(v);else aiAsk(v)});
+$('aiInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('aiForm').requestSubmit()}});$('aiInput').addEventListener('input',()=>{const t=$('aiInput');t.style.height='auto';t.style.height=Math.min(160,t.scrollHeight+2)+'px'});
+$('aiClear').onclick=()=>{if(aiCtl)aiCtl.abort();quizStop();aiTurns=[];$('aiLog').innerHTML='<p class="ai-hello" id="aiHello">New chat started. What are we studying?</p>';aiShow()};
+/* show which files were picked (the real file input is hidden), accept drag & drop */
+function showChosenFiles(){const files=[...$('courseFiles').files],drop=document.querySelector('.upload-drop');
+  drop.classList.toggle('has-files',files.length>0);
+  if(!files.length){setText($('uploadMain'),'Choose files');setText($('uploadSub'),'or drop them here');return}
+  const mb=files.reduce((a,f)=>a+f.size,0)/1048576;
+  setText($('uploadMain'),'✓ '+files.length+' file'+(files.length>1?'s':'')+' ready ('+mb.toFixed(1)+' MB)');
+  setText($('uploadSub'),files.map(f=>f.name).join(', '));
+  if(!$('courseName').value.trim())$('courseName').value=files[0].name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').slice(0,80);
+  setText($('uploadProgress'),'Now press "Upload to study library".')}
+$('courseFiles').addEventListener('change',showChosenFiles);
+(()=>{const drop=document.querySelector('.upload-drop');
+  ['dragenter','dragover'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('drag')}));
+  ['dragleave','drop'].forEach(t=>drop.addEventListener(t,()=>drop.classList.remove('drag')));
+  drop.addEventListener('drop',e=>{e.preventDefault();if(e.dataTransfer.files.length){$('courseFiles').files=e.dataTransfer.files;showChosenFiles()}});
+  // a file dropped anywhere else must not make the browser leave the app
+  window.addEventListener('dragover',e=>e.preventDefault());window.addEventListener('drop',e=>e.preventDefault())})();
+$('uploadCourseBtn').onclick=async()=>{const name=$('courseName').value.trim(),files=[...$('courseFiles').files];if(!files.length){toast('Choose a file first');setText($('uploadProgress'),'Click the box above to choose a file.');return}if(!name){toast('Give the course a name');$('courseName').focus();return}if(!aiServer){toast('Start the study server first');return}const id='course_'+Date.now().toString(36);const fd=new FormData();fd.append('courseId',id);fd.append('courseName',name);files.forEach(f=>fd.append('files',f));$('uploadCourseBtn').disabled=true;$('uploadProgress').textContent='Uploading and indexing your course…';try{const r=await fetch('/api/upload',{method:'POST',body:fd});let d={};try{d=await r.json()}catch(_){d={error:'The study server sent an unexpected reply. Check the black window for errors.'}}if(!r.ok)throw new Error(d.error||'Upload failed');const courses=libraryData().map(x=>({...x,active:false}));courses.unshift({id,name,active:true,created:Date.now(),files:d.files||[]});saveLibrary(courses);$('courseName').value='';$('courseFiles').value='';showChosenFiles();$('uploadProgress').textContent=(d.files||[]).length+' file(s) ready for your study buddy.';renderLibrary();aiShow();toast('Course added to your library',{tone:'ok'})}catch(e){$('uploadProgress').textContent='Upload failed: '+e.message;toast('Could not add the course')}finally{$('uploadCourseBtn').disabled=false}};
+$('courseList').addEventListener('click',e=>{const b=e.target.closest('[data-course]');if(b)setActiveCourse(b.dataset.course)});
+$('libraryQuiz').onclick=()=>aiAsk('Quiz me on my active course. Start with one question and wait for my answer.','Quiz me on this course');$('libraryFlashcards').onclick=()=>aiAsk('Create 10 exam-focused flashcards from my active course.','Make flashcards from this course');$('libraryStudyPlan').onclick=()=>aiAsk('Build me a practical 7-day study plan for my active course. Ask me only one question first if you need to know how much time I have per day.','Make a 7-day study plan');
+renderLibrary();aiShow();checkAIServer();
+
+/* =====================================================================
+   14. MISSION, FOCUS SCORE, STREAK
+   ===================================================================== */
+const V2_KEY='omaima_v2_meta';
+function v2Meta(){try{return JSON.parse(store.get(V2_KEY)||'{}')}catch(e){return {}}}
+function v2Save(x){store.set(V2_KEY,JSON.stringify(x))}
+function v2StudyDay(d){return ((hist[dayKey(d)]||{}).sec||0)>=25*60}
+function v2Streak(){let n=0,d=new Date();if(!v2StudyDay(d))d.setDate(d.getDate()-1);while(v2StudyDay(d)){n++;d.setDate(d.getDate()-1);if(n>365)break}return n}
+function v2Score(){
+  const t=today(), goal=getGoal(), mins=(t.sec||0)/60;
+  const time=Math.min(45,mins/Math.max(1,goal*60)*45);
+  const list=tasks(), total=list.length, done=list.filter(x=>x.done).length;
+  const taskPart=total?Math.min(30,done/total*30):0;
+  const sessions=Math.min(15,(t.pomos||0)/4*15);
+  const consistency=Math.min(10,v2Streak()/7*10);
+  return Math.round(Math.min(100,time+taskPart+sessions+consistency));
+}
+function renderMission(){
+  const list=tasks(), done=list.filter(x=>x.done).length, pct=list.length?Math.round(done/list.length*100):0;
+  setText($('missionPct'),pct+'%');setText($('missionCount'),done+' of '+list.length+' tasks complete');$('missionFill').style.width=pct+'%';
+  const ordered=[...list].sort((a,b)=>(a.done-b.done)||(PRI_RANK[priOf(a)]-PRI_RANK[priOf(b)]));
+  $('missionTasks').innerHTML=ordered.length?ordered.slice(0,5).map(x=>'<div class="mission-task '+(x.done?'done':'')+'"><span class="dot"></span><span class="grow">'+escapeHtml(x.text)+'</span><span class="mission-small">'+(x.sec?fmtDur(x.sec):'')+'</span></div>').join(''):'<div class="empty-mission">Add a few tasks above and this becomes your finish line.</div>';
+  const score=v2Score(),streak=v2Streak();setText($('focusScore'),score);setText($('scoreRingText'),score);setText($('streakBadge'),'🔥 '+streak+' day'+(streak===1?'':'s')+' streak');setText($('streakText'),streak?streak+' day streak':'Build your streak');setText($('streakSub'),streak?'Keep the chain alive with 25 focused minutes today.':'25+ focused minutes counts as a study day.');
+  const deg=Math.round(score*3.6);$('scoreRing').style.background='conic-gradient(var(--lilac) '+deg+'deg, rgba(255,255,255,.08) '+deg+'deg)';
+  const note=score>=85?'Excellent focus today.':score>=65?'Strong progress — keep going.':score>=35?'You’re building momentum.':'Start one focused session to lift your score.';setText($('scoreNote'),note);
+}
+function escapeHtml(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+$('focusModeBtn').onclick=()=>{document.documentElement.classList.add('focus-mode');toast('Focus mode on — just you, the timer, and the work.',{tone:'ok'});}
+$('focusExitBtn').onclick=()=>document.documentElement.classList.remove('focus-mode');
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.documentElement.classList.remove('focus-mode')});
+const _renderHistory=renderHistory;renderHistory=function(){_renderHistory();renderMission()};
+const _renderTodos=renderTodos;renderTodos=function(){_renderTodos();renderMission()};
+
+/* =====================================================================
+   15. DEMO MODE — a pretend lamp, so the page works without hardware
+   It sends the same "S,…" and "E,DONE" lines as the real lamp and
+   answers the same commands (A, F, B, M, T, K). Time runs 20× faster.
+   Your real study history is put aside and comes back when the demo ends.
+   ===================================================================== */
+const DEMO_SPEED=20;                       // 1 real second = 20 lamp seconds
+function demoLine(){const s=demoSim;
+  handleLine(['S',s.mode,s.focusDone,s.focusMin,s.breakMin,s.modeSec,s.here?40:0,s.pomos,s.today,s.here?1:0,performance.now()<s.overlayUntil?2:0,s.pending].join(','))}
+function demoStep(){const s=demoSim;s.modeSec++;      // one lamp second
+  switch(s.mode){
+    case 0:case 2:if(s.here){s.mode=4;s.modeSec=0;s.focusDone=0}else if(s.mode===0&&s.modeSec>90)s.mode=2;break;
+    case 1:if(s.here){s.mode=4;s.modeSec=0}else if(s.modeSec>300){s.mode=0;s.modeSec=0;s.focusDone=0}break;
+    case 4:if(!s.here){s.mode=1;s.modeSec=0;break}
+      s.focusDone++;s.pending++;s.today++;
+      if(s.focusDone>=s.focusMin*60){s.mode=5;s.modeSec=0;s.pomos++;handleLine('E,DONE')}break;
+    case 5:if(s.modeSec>=3*DEMO_SPEED){s.mode=6;s.modeSec=0}break;   // show "you did it" for ~3 s
+    case 6:if(s.modeSec>=s.breakMin*60){s.mode=0;s.modeSec=0;s.focusDone=0}break;
+  }}
+function demoCmd(text){const s=demoSim,c=text[0],n=parseInt(text.slice(1));
+  if(c==='A')s.pending=Math.max(0,s.pending-(n||0));
+  else if(c==='F'&&n>0)s.focusMin=n;
+  else if(c==='B'&&n>0)s.breakMin=n;
+  else if(c==='M'||c==='T')s.overlayUntil=performance.now()+2500;
+  return true}
+function updateDemoBar(){const h=!!(demoSim&&demoSim.here);$('demoSit').setAttribute('aria-pressed',h);setText($('demoSitLbl'),h?'Step away':'Sit down')}
+function demoSit(here){if(!demoOn)return;demoSim.here=here;updateDemoBar()}
+function demoStart(){
+  if(demoOn||port||connecting)return;
+  realHist=hist;hist=JSON.parse(JSON.stringify(hist));demoOn=true;
+  demoSim={mode:0,focusDone:0,focusMin:25,breakMin:5,modeSec:0,pomos:0,today:0,here:false,overlayUntil:0,pending:0};
+  setConnected(true);needSync=true;
+  demoTimer=setInterval(()=>{demoStep();demoLine()},1000/DEMO_SPEED);
+  $('demoBar').hidden=false;updateDemoBar();react('hello');
+  toast('Demo mode on. Press Sit down to start a session.',{ms:5000});
+}
+function demoStop(){
+  if(!demoOn)return;clearInterval(demoTimer);demoTimer=null;
+  demoOn=false;hist=realHist;realHist=null;demoSim=null;
+  setConnected(false);$('demoBar').hidden=true;chartKey='';renderTodos();renderHistory();
+  toast('Demo ended. Your real data is back.');
+}
+$('demoBtn').onclick=demoStart;
+$('demoExit').onclick=demoStop;
+$('demoSit').onclick=()=>demoSit(!demoSim.here);
+document.addEventListener('keydown',e=>{
+  if(!demoOn||e.key.toLowerCase()!=='s'||e.ctrlKey||e.metaKey||e.altKey)return;
+  const t=e.target;if(t&&(t.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))return;
+  e.preventDefault();demoSit(!demoSim.here)});
+
+/* =====================================================================
+   16. START
+   ===================================================================== */
+setConnected(false);
+renderHistory();
+renderTodos();
+updateMsgPreview();
+setInterval(()=>{renderHistory();const d=dayKey(new Date());if(d!==shownDay){shownDay=d;renderTodos();sendTask()}},15000);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
