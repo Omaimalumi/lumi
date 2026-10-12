@@ -37,13 +37,15 @@ const PORT = Number(process.env.PORT || 8787);
 // On your own computer the server only listens to this computer (127.0.0.1).
 // Online (Render), set HOST=0.0.0.0 so visitors can reach it.
 const HOST = process.env.HOST || '127.0.0.1';
-// Online, set APP_PASSWORD so strangers can't use up your Nebius credits.
+// Online, set APP_PASSWORD so strangers can't use up your AI credits.
 // Leave it empty on your own computer and no password is asked.
 const APP_PASSWORD = (process.env.APP_PASSWORD || '').trim();
 // The placeholder from .env.example counts as "no key yet".
-const NEBIUS_API_KEY = /^(paste-your-key-here)?$/i.test((process.env.NEBIUS_API_KEY || '').trim()) ? '' : process.env.NEBIUS_API_KEY.trim();
-const NEBIUS_MODEL = process.env.NEBIUS_MODEL || 'nvidia/nemotron-3-super-120b-a12b';
-const NEBIUS_BASE_URL = (process.env.NEBIUS_BASE_URL || 'https://api.tokenfactory.nebius.com/v1').replace(/\/$/, '');
+// AI settings (any OpenAI-compatible service; default: Google Gemini). Old NEBIUS_* names still work.
+const RAW_AI_KEY = (process.env.AI_API_KEY || process.env.NEBIUS_API_KEY || '').trim();
+const NEBIUS_API_KEY = /^(paste-your-key-here)?$/i.test(RAW_AI_KEY) ? '' : RAW_AI_KEY;
+const NEBIUS_MODEL = process.env.AI_MODEL || process.env.NEBIUS_MODEL || 'gemini-3.8-flash';
+const NEBIUS_BASE_URL = (process.env.AI_BASE_URL || process.env.NEBIUS_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai').replace(/\/$/, '');
 // PRACTICE_MODE=1 (and no API key) lets you click through every feature with pretend answers.
 // It is clearly labelled in the page and is never used once a real key is set.
 const PRACTICE = !NEBIUS_API_KEY && /^(1|true|yes)$/i.test(process.env.PRACTICE_MODE || '');
@@ -205,7 +207,7 @@ function buildSystemPrompt(baseRules, course, retrieved, note) {
 
 async function nebiusChat(messages, options = {}) {
   if (!NEBIUS_API_KEY && PRACTICE) return practiceReply(options);
-  if (!NEBIUS_API_KEY) throw new Error('NEBIUS_API_KEY is not configured on the study server.');
+  if (!NEBIUS_API_KEY) throw new Error('AI_API_KEY is not configured on the study server.');
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), options.timeoutMs || 90000);
   try {
@@ -228,11 +230,11 @@ async function nebiusChat(messages, options = {}) {
     try { data = JSON.parse(raw); } catch { data = { error: raw }; }
     if (!response.ok) {
       const detail = data?.error?.message || data?.message || data?.error || `HTTP ${response.status}`;
-      throw new Error(`Nebius request failed: ${detail}`);
+      throw new Error(`AI request failed: ${detail}`);
     }
     // Nemotron can include its private reasoning in <think> tags — keep only the answer.
     const text = String(data?.choices?.[0]?.message?.content || '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
-    if (!text) throw new Error('Nebius returned no assistant text.');
+    if (!text) throw new Error('The AI returned no answer text.');
     return text;
   } finally {
     clearTimeout(timer);
@@ -284,7 +286,7 @@ app.get('/api/status', (_req, res) => {
   res.json({
     ok: AI_READY,
     practice: PRACTICE,
-    provider: PRACTICE ? 'Practice mode (no API key)' : 'Nebius Token Factory',
+    provider: PRACTICE ? 'Practice mode (no API key)' : 'Gemini (OpenAI-compatible API)',
     model: NEBIUS_MODEL,
     configured: Boolean(NEBIUS_API_KEY)
   });
@@ -485,8 +487,8 @@ app.listen(PORT, HOST, () => {
   console.log(`Lumi study server running at http://localhost:${PORT}`);
   console.log(`Listening on: ${HOST}`);
   console.log(`Password protection: ${APP_PASSWORD ? 'on' : 'off'}`);
-  console.log(`Nebius model: ${NEBIUS_MODEL}`);
+  console.log(`AI model: ${NEBIUS_MODEL}`);
   console.log(`API key configured: ${Boolean(NEBIUS_API_KEY)}`);
-  if (PRACTICE) console.log('PRACTICE MODE: answers are pretend. Add NEBIUS_API_KEY to .env for the real AI.');
+  if (PRACTICE) console.log('PRACTICE MODE: answers are pretend. Add AI_API_KEY to .env for the real AI.');
   if (HOST !== '127.0.0.1' && !APP_PASSWORD) console.log('WARNING: server is reachable from outside but APP_PASSWORD is not set.');
 });
