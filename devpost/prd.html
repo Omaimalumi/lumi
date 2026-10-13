@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumi PRD</title>
+<style>
+  :root {
+    --bg: #fbf8f3; --card: #ffffff; --ink: #2b2633; --muted: #6b6475;
+    --line: #e7e0d6; --accent: #d98f2b; --accent-soft: #fdf1dc;
+    --calm: #4f7cac; --calm-soft: #e6eef7; --ai: #8a5cc2; --ai-soft: #f1eafa;
+    --good: #3f8f5f; --good-soft: #e5f3ea; --warn: #b5523b; --warn-soft: #fbe9e4;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1a20; --card: #26232b; --ink: #f1edf5; --muted: #a9a2b3;
+      --line: #3a3541; --accent: #f0b85c; --accent-soft: #3a2f1c;
+      --calm: #86aedb; --calm-soft: #22303f; --ai: #b994e6; --ai-soft: #302540;
+      --good: #6fc08f; --good-soft: #1f3328; --warn: #e48a73; --warn-soft: #3d241e;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding: 32px 16px 64px;
+  }
+  main { max-width: 860px; margin: 0 auto; }
+  .badge {
+    display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .04em;
+    text-transform: uppercase; padding: 3px 10px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  h1 { font-size: 38px; line-height: 1.1; margin: 6px 0; }
+  .tagline { font-size: 18px; color: var(--muted); margin: 0 0 24px; }
+  h2 { font-size: 22px; margin: 40px 0 12px; }
+  h3 { font-size: 17px; margin: 0 0 6px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 18px 22px; margin: 12px 0;
+  }
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .two .card { margin: 0; }
+  .two .card p { margin: 0; color: var(--muted); }
+  .grew { border-left: 6px solid var(--ai); background: var(--ai-soft); }
+  .grew p { margin: 0; }
+  .diagram { overflow-x: auto; }
+  .diagram svg { display: block; min-width: 680px; width: 100%; height: auto; }
+
+  /* Journey stepper */
+  .phase { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .stepnum { font-size: 14px; color: var(--muted); }
+  .steptext { font-size: 19px; margin: 6px 0 4px; min-height: 3.2em; }
+  .lampline { font-family: ui-monospace, Consolas, monospace; font-size: 14px; color: var(--muted); min-height: 1.5em; }
+  .bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; margin: 14px 0; }
+  .bar span { display: block; height: 100%; background: var(--accent); width: 0; transition: width .25s ease; }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; }
+  button {
+    font: inherit; font-size: 14px; padding: 6px 14px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  }
+  button:disabled { opacity: .4; cursor: default; }
+
+  details {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    margin: 10px 0; padding: 0 18px;
+  }
+  summary {
+    cursor: pointer; padding: 14px 0; font-weight: 600; font-size: 17px;
+    list-style: none; display: flex; align-items: center; gap: 10px;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; margin-left: auto; color: var(--muted); font-size: 20px; }
+  details[open] summary::after { content: "−"; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  details ul { margin: 0 0 16px; padding-left: 22px; }
+  details p { margin: 0 0 12px; color: var(--muted); }
+  ul.checks { list-style: none; padding-left: 0; }
+  ul.checks li { padding: 4px 0 4px 30px; position: relative; }
+  ul.checks li::before {
+    content: ""; position: absolute; left: 4px; top: 9px; width: 14px; height: 14px;
+    border: 2px solid var(--muted); border-radius: 4px;
+  }
+  .pill { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; margin-left: 6px; }
+  .pill.ai { background: var(--ai-soft); color: var(--ai); }
+  .pill.new { background: var(--accent-soft); color: var(--accent); }
+  .states { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+  .state { border-radius: 12px; padding: 14px; border: 1px solid var(--line); background: var(--card); }
+  .state b { display: block; margin-bottom: 4px; }
+  .state span { color: var(--muted); font-size: 14px; }
+  .state.err { background: var(--warn-soft); border-color: var(--warn); }
+  .layout-list { counter-reset: l; list-style: none; padding: 0; margin: 0; }
+  .layout-list li {
+    counter-increment: l; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 10px; margin: 6px 0;
+  }
+  .layout-list li.main { border: 2px solid var(--accent); background: var(--accent-soft); }
+  .layout-list li.ai { border: 2px solid var(--ai); background: var(--ai-soft); }
+  .layout-list li::before { content: counter(l) ". "; color: var(--muted); }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: .92em; }
+  .q { padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .q:last-child { border-bottom: 0; }
+  .q b { color: var(--accent); }
+  footer { margin-top: 48px; font-size: 14px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+
+<span class="badge">PRD · Approved</span>
+<h1>Lumi — Product Requirements</h1>
+<p class="tagline">A cozy desk study companion that notices when you sit down, counts down your study time, pauses when you leave, and quizzes you on your own notes.</p>
+
+<div class="two">
+  <div class="card"><h3>1. The demo session</h3><p>What the proof of concept must do smoothly. All build time goes here.</p></div>
+  <div class="card"><h3>2. Full feature list</h3><p>Everything else the app already has, described as it works today. Stays on the page, not checked or fixed.</p></div>
+</div>
+
+<h2>How the plan grew from the scope</h2>
+<div class="card grew">
+  <p>Scope said <em>"let the AI study buddy quiz you."</em> Now we know exactly what that means: 5 questions, one at a time, each tagged like <strong>"Question 2 of 5 · Mitosis,"</strong> graded with an explanation when you're wrong, and ending with <strong>"Quiz done: 4/5 correct (80%)."</strong> Weak spots now light up on Lumi's screen as <code>REVIEW: MITOSIS</code>. You moved that into the demo because "it connects the AI to the lamp."</p>
+</div>
+
+<h2>The Core Journey</h2>
+<div class="card diagram">
+  <svg viewBox="0 0 800 330" role="img" aria-labelledby="jt">
+    <title id="jt">Journey: set up, timer moments in Focus mode, the AI quiz with weak spots sent to the lamp, and the finish.</title>
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+      </marker>
+    </defs>
+    <g font-family="system-ui, sans-serif" font-size="13" text-anchor="middle">
+      <!-- Phase labels -->
+      <text x="90" y="22" fill="var(--muted)" font-weight="700">BEFORE</text>
+      <text x="360" y="22" fill="var(--muted)" font-weight="700">TIMER MOMENTS · FOCUS MODE</text>
+      <text x="690" y="22" fill="var(--muted)" font-weight="700">FINISH</text>
+      <text x="360" y="232" fill="var(--ai)" font-weight="700">AI MOMENT · COUNTDOWN KEEPS RUNNING</text>
+
+      <!-- Before -->
+      <rect x="20" y="40" width="140" height="70" rx="12" fill="var(--calm-soft)" stroke="var(--calm)"/>
+      <text x="90" y="64" fill="var(--ink)" font-weight="600">Connect lamp</text>
+      <text x="90" y="82" fill="var(--muted)">pick focus time</text>
+      <text x="90" y="98" fill="var(--muted)">upload notes</text>
+
+      <!-- Timer -->
+      <rect x="200" y="40" width="100" height="70" rx="12" fill="var(--calm-soft)" stroke="var(--calm)"/>
+      <text x="250" y="70" fill="var(--ink)" font-weight="600">Friendly</text>
+      <text x="250" y="88" fill="var(--ink)" font-weight="600">eyes</text>
+
+      <rect x="320" y="40" width="110" height="70" rx="12" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
+      <text x="375" y="64" fill="var(--ink)" font-weight="600">Sit down</text>
+      <text x="375" y="82" fill="var(--muted)">5 s bar →</text>
+      <text x="375" y="98" fill="var(--muted)">countdown</text>
+
+      <rect x="320" y="140" width="110" height="60" rx="12" fill="var(--calm-soft)" stroke="var(--calm)"/>
+      <text x="375" y="164" fill="var(--ink)" font-weight="600">"Where'd</text>
+      <text x="375" y="182" fill="var(--ink)" font-weight="600">you go?"</text>
+
+      <!-- Finish -->
+      <rect x="620" y="40" width="140" height="70" rx="12" fill="var(--good-soft)" stroke="var(--good)"/>
+      <text x="690" y="70" fill="var(--ink)" font-weight="600">00:00</text>
+      <text x="690" y="88" fill="var(--muted)">tune + "Done!"</text>
+
+      <!-- AI -->
+      <rect x="200" y="250" width="140" height="62" rx="12" fill="var(--ai-soft)" stroke="var(--ai)"/>
+      <text x="270" y="276" fill="var(--ink)" font-weight="600">Quiz me</text>
+      <text x="270" y="294" fill="var(--muted)">5 questions</text>
+
+      <rect x="380" y="250" width="140" height="62" rx="12" fill="var(--ai-soft)" stroke="var(--ai)"/>
+      <text x="450" y="276" fill="var(--ink)" font-weight="600">Weak spot</text>
+      <text x="450" y="294" fill="var(--muted)">REVIEW: MITOSIS</text>
+
+      <rect x="560" y="250" width="140" height="62" rx="12" fill="var(--ai-soft)" stroke="var(--ai)"/>
+      <text x="630" y="276" fill="var(--ink)" font-weight="600">Quiz done</text>
+      <text x="630" y="294" fill="var(--muted)">4/5 · what to review</text>
+
+      <!-- Edges -->
+      <line x1="160" y1="75" x2="196" y2="75" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar)"/>
+      <line x1="300" y1="75" x2="316" y2="75" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar)"/>
+      <line x1="430" y1="75" x2="616" y2="75" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="2 4" marker-end="url(#ar)"/>
+      <text x="525" y="66" fill="var(--muted)">countdown runs</text>
+
+      <line x1="360" y1="110" x2="360" y2="136" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar)"/>
+      <text x="350" y="128" text-anchor="end" fill="var(--muted)" font-size="12">leave</text>
+      <line x1="390" y1="140" x2="390" y2="114" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar)"/>
+      <text x="398" y="128" text-anchor="start" fill="var(--muted)" font-size="12">back 5 s</text>
+
+      <path d="M430,90 C520,140 300,200 270,246" fill="none" stroke="var(--ai)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+      <line x1="340" y1="281" x2="376" y2="281" stroke="var(--ai)" stroke-width="1.5" marker-end="url(#ar)"/>
+      <line x1="520" y1="281" x2="556" y2="281" stroke="var(--ai)" stroke-width="1.5" marker-end="url(#ar)"/>
+      <path d="M450,250 C470,200 560,150 600,112" fill="none" stroke="var(--ai)" stroke-width="1.5" marker-end="url(#ar)"/>
+      <text x="560" y="170" fill="var(--ai)" font-size="12">to Lumi's screen</text>
+    </g>
+  </svg>
+</div>
+
+<div class="card" id="journey">
+  <div class="phase" id="jPhase"></div>
+  <div class="stepnum" id="jNum"></div>
+  <div class="steptext" id="jText"></div>
+  <div class="lampline" id="jLamp"></div>
+  <div class="bar"><span id="jBar"></span></div>
+  <div class="controls">
+    <button type="button" id="jPrev">← Back</button>
+    <button type="button" id="jNext">Next →</button>
+    <button type="button" id="jAll">Show all steps</button>
+  </div>
+  <ol id="jList" hidden></ol>
+  <noscript><p>Turn on JavaScript to step through the journey, or read <code>prd.md &gt; The Core Journey</code>.</p></noscript>
+</div>
+
+<h2>Screens and Layout</h2>
+<div class="two">
+  <div class="card">
+    <h3>The web page (layout stays as it is)</h3>
+    <ol class="layout-list">
+      <li>Top bar: title, <b>Connect lamp</b>, <b>Try demo</b></li>
+      <li>Quick start checklist</li>
+      <li class="main"><b>Study timer</b>: cute character, progress ring, countdown, focusing / paused / break</li>
+      <li>Today's tasks · Your progress · Session settings</li>
+      <li>Note on the lamp</li>
+      <li>Today's mission</li>
+      <li class="ai">Course library · Notebook · <b>Study buddy</b></li>
+    </ol>
+    <p style="margin:10px 0 0;color:var(--muted);font-size:14px"><b>Focus mode</b> hides everything except the study timer. A button or Esc brings the page back.</p>
+  </div>
+  <div class="card">
+    <h3>Lumi's screen</h3>
+    <ul style="margin:0;padding-left:20px">
+      <li>Friendly, animated eyes</li>
+      <li>The 5-second "sitting down" bar</li>
+      <li>The countdown</li>
+      <li>"Where'd you go?"</li>
+      <li>"Done!"</li>
+      <li>Short messages like <code>REVIEW: MITOSIS</code></li>
+    </ul>
+  </div>
+</div>
+
+<h2>Look and Feel</h2>
+<div class="two">
+  <div class="card"><h3>Mood</h3><p>Cozy, calm, and cute. "Like a friendly study buddy, not a strict timer." "Almost like a comfort zone with a study tracker and a study partner."</p></div>
+  <div class="card"><h3>Web page</h3><p>Dark background, soft lilac and lavender, rounded cards, a cute character, small touches like ♡ and ✦.</p></div>
+  <div class="card"><h3>Lumi's screen</h3><p>The eyes should feel alive and playful.</p></div>
+  <div class="card"><h3>Avoid</h3><p>A boring office tool. Too bright or harsh. Cluttered or stressful. Changes must match the existing style.</p></div>
+</div>
+
+<h2>Features and How We'll Know They Work</h2>
+<details>
+  <summary><span class="dot" style="background:var(--calm)"></span>Connecting the Lamp</summary>
+  <ul class="checks">
+    <li>Clicking <b>Connect lamp</b> connects Lumi over USB, and the page shows that it's connected.</li>
+    <li>The focus time picked in Session settings is the one the countdown uses, on both screens.</li>
+  </ul>
+</details>
+<details open>
+  <summary><span class="dot" style="background:var(--accent)"></span>Noticing You (Presence Timer) <span class="pill new">the heart of Lumi</span></summary>
+  <ul class="checks">
+    <li>With nobody within about 40 cm, Lumi shows animated eyes, and the countdown doesn't run.</li>
+    <li>Sitting down within about 40 cm fills a bar for 5 seconds, then the countdown starts.</li>
+    <li>The countdown on Lumi's screen and on the web page show the same time.</li>
+    <li>The page's label shows "focusing" while the countdown runs.</li>
+  </ul>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--calm)"></span>Pausing When You Leave</summary>
+  <ul class="checks">
+    <li>The moment you leave, the countdown stops, and Lumi shows "Where'd you go?" with a 10-second countdown.</li>
+    <li>If you come back within 10 seconds, the countdown continues right away.</li>
+    <li>After 10 seconds away, Lumi shows "Paused," and the page shows "paused."</li>
+    <li>After you sit back down for 5 seconds, the countdown continues from the same time. It doesn't restart.</li>
+    <li>If you stay away for 5 minutes, the session is cancelled.</li>
+  </ul>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--good)"></span>Finishing a Session</summary>
+  <ul class="checks"><li>At 00:00, Lumi plays a tune and its screen shows "Done!"</li></ul>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--calm)"></span>Focus Mode</summary>
+  <ul class="checks">
+    <li>Turning on Focus mode leaves only the study timer visible.</li>
+    <li>Leaving Focus mode brings the full page back, and the countdown keeps running.</li>
+  </ul>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--ai)"></span>AI Study Buddy Quiz <span class="pill ai">AI</span></summary>
+  <ul class="checks">
+    <li>Notes uploaded to the Course library can be used by the quiz.</li>
+    <li><b>Quiz me (5 questions)</b> asks one question at a time, about the uploaded notes.</li>
+    <li>Each question shows its number and topic, for example "Question 2 of 5 · Mitosis."</li>
+    <li>After you type an answer and press Enter, the AI says whether you're correct. If you're wrong, it explains the right answer.</li>
+    <li>After 5 questions, it shows the score ("Quiz done: 4/5 correct (80%)"), lists weak spots, and suggests what to review next.</li>
+  </ul>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--ai)"></span>Weak Spots on the Lamp <span class="pill ai">AI → lamp</span></summary>
+  <p>Moved from "Later" into the demo, because "it connects the AI to the lamp."</p>
+  <ul class="checks">
+    <li>A topic becomes a weak spot when you've missed it more often than you've gotten it right.</li>
+    <li>When a new weak spot appears, Lumi's screen shows <code>REVIEW: TOPIC</code>, for example <code>REVIEW: MITOSIS</code>.</li>
+  </ul>
+</details>
+
+<h2>States</h2>
+<div class="states">
+  <div class="state"><b>Nobody there</b><span>Friendly eyes. Countdown doesn't run.</span></div>
+  <div class="state"><b>Focusing</b><span>Countdown runs on both screens. Page shows "focusing."</span></div>
+  <div class="state"><b>Away</b><span>Countdown stops at once. "Where'd you go?", then "Paused" after 10 s. Cancelled after 5 min.</span></div>
+  <div class="state"><b>Done</b><span>Tune and "Done!" on Lumi's screen.</span></div>
+  <div class="state err"><b>AI problem</b><span>Never stops the session. Timer and lamp keep working. Quiz progress isn't lost.</span></div>
+  <div class="state err"><b>Lamp unplugged</b><span>Page shows "Lost the lamp connection, plug it back in." Lumi turns off, but today's total is saved every minute, so at most a minute is lost.</span></div>
+</div>
+
+<h2>Your Product Decisions</h2>
+<div class="card">
+  <ul style="margin:0;padding-left:20px">
+    <li>Keep every section on the page and don't change the layout. The doc shows the full app, while the video stays focused.</li>
+    <li>Describe the extras as they are, and spend the build time on the demo.</li>
+    <li>Use Focus mode for the timer moments, and scroll to the Study buddy for the quiz.</li>
+    <li>Time away never counts: the countdown stops the moment you leave, and a session is cancelled after 5 minutes away.</li>
+    <li>The AI moment is the quiz.</li>
+    <li>Weak spots on Lumi's screen are in the demo.</li>
+    <li>An AI problem never stops the session, and quiz progress isn't lost.</li>
+    <li>You won't appear on camera. The video shows the screens and your hands.</li>
+    <li>Film the finish with a short custom focus time (about 1 minute), so "Done!" can be shown without waiting.</li>
+    <li>Lumi's screen says "Done!" (currently "Done! Break time"), not "DONE."</li>
+    <li>The look stays cozy, calm, and cute.</li>
+  </ul>
+</div>
+
+<h2>What's In, What's Not</h2>
+<details open>
+  <summary><span class="dot" style="background:var(--good)"></span>What we're building (all of it exists; make it smooth)</summary>
+  <ul>
+    <li>Connecting the lamp and choosing the focus time</li>
+    <li>Friendly eyes → sitting down → 5-second bar → countdown</li>
+    <li>Leaving → "Where'd you go?" → pause → resume</li>
+    <li>Tune and "Done!" at 00:00</li>
+    <li>Focus mode for the timer moments</li>
+    <li>Uploading notes and the 5-question AI quiz</li>
+    <li>Weak spots shown on Lumi's screen as <code>REVIEW: TOPIC</code></li>
+    <li>An AI problem never stopping the session</li>
+  </ul>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--calm)"></span>Full Feature List (stays on the page, not checked or fixed)</summary>
+  <ul>
+    <li><b>Try demo:</b> try the page with a pretend lamp</li>
+    <li><b>Quick start:</b> a short setup checklist</li>
+    <li><b>Today's tasks:</b> today's study tasks</li>
+    <li><b>Your progress:</b> today's study time, sessions, and streak</li>
+    <li><b>Session settings:</b> focus time (25/40/50/60 or custom) and break length</li>
+    <li><b>Note on the lamp:</b> send a short message to Lumi's screen</li>
+    <li><b>Today's mission:</b> a daily study goal with progress</li>
+    <li><b>Course library:</b> upload notes (PDF, Word, or text)</li>
+    <li><b>Notebook:</b> write and keep your own notes</li>
+    <li><b>Study buddy buttons:</b> Explain my note, Summarize, Make flashcards, Find my weak areas</li>
+    <li><b>Break timer:</b> starts after "Done!"</li>
+    <li><b>Session report:</b> a short AI-written summary</li>
+  </ul>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--accent)"></span>Deferred, later, and non-goals</summary>
+  <ul>
+    <li><b>Deferred:</b> the session report ("a nice extra if there's time," only after the demo works), and the other extras.</li>
+    <li><b>Later:</b> fitting the hardware inside a real lamp; checking and polishing the extras.</li>
+    <li><b>Non-goals:</b> no layout changes or redesign, no new features, no fixing extras unless they get in the way of the demo.</li>
+  </ul>
+</details>
+
+<h2>Open Questions <span style="font-size:14px;font-weight:400;color:var(--muted)">(none block the spec)</span></h2>
+<div class="card">
+  <div class="q"><b>Assumption ·</b> When the AI can't answer, the study buddy shows a short, friendly message and you can try again.</div>
+  <div class="q"><b>Assumption ·</b> Quiz me with no notes uploaded shows a friendly message asking you to upload notes first.</div>
+  <div class="q"><b>Resolved ·</b> Lamp unplugged mid-session: see States.</div>
+  <div class="q"><b>Resolved ·</b> Filming "Done!": use a custom focus time of about 1 minute.</div>
+</div>
+
+<footer>This page is a visual companion. The official plan is <code>devpost/prd.md</code>.</footer>
+</main>
+
+<script>
+  const steps = [
+    ["Before the session", "Open the web page and click Connect lamp. The lamp is connected over USB.", ""],
+    ["Before the session", "In Session settings, pick the focus time: 25, 40, 50, or 60 minutes, or a custom time.", ""],
+    ["Before the session", "Upload your notes to the Course library.", ""],
+    ["Timer moments · Focus mode", "Turn on Focus mode. The page now shows only the study timer.", ""],
+    ["Timer moments · Focus mode", "Nobody is at the desk.", "Lumi's screen: friendly, animated eyes"],
+    ["Timer moments · Focus mode", "Sit down within about 40 cm. A bar fills for 5 seconds, then the countdown starts on Lumi's screen and on the web page. ★ The \"oh, that's cool\" moment.", "Lumi's screen: ▓▓▓▓░ → 24:59"],
+    ["Timer moments · Focus mode", "Get up. The countdown stops right away. Come back within 10 seconds and it continues; after 10 seconds it shows Paused.", "Lumi's screen: Where'd you go?  10…9…8 → Paused"],
+    ["Timer moments · Focus mode", "Sit back down for 5 seconds. The countdown continues from where it stopped.", "Lumi's screen: countdown continues"],
+    ["AI moment · countdown keeps running", "Leave Focus mode and scroll down to the Study buddy.", ""],
+    ["AI moment · countdown keeps running", "Click Quiz me (5 questions). It asks one question at a time, based on your own notes.", "Page: Question 2 of 5 · Mitosis"],
+    ["AI moment · countdown keeps running", "Type an answer and press Enter. The AI says whether you're correct. If you're wrong, it explains the right answer.", ""],
+    ["AI moment · countdown keeps running", "Keep missing a topic, and it becomes a weak spot.", "Lumi's screen: REVIEW: MITOSIS"],
+    ["AI moment · countdown keeps running", "After 5 questions, see your score, your weak spots, and what to review next.", "Page: Quiz done: 4/5 correct (80%)"],
+    ["Finish", "The countdown reaches 00:00. Lumi plays a tune.", "Lumi's screen: Done!"]
+  ];
+  let i = 0;
+  const $ = id => document.getElementById(id);
+  function show() {
+    const [phase, text, lamp] = steps[i];
+    $("jPhase").textContent = phase;
+    $("jPhase").style.color = phase.startsWith("AI") ? "var(--ai)" : phase === "Finish" ? "var(--good)" : phase.startsWith("Timer") ? "var(--accent)" : "var(--calm)";
+    $("jNum").textContent = "Step " + (i + 1) + " of " + steps.length;
+    $("jText").textContent = text;
+    $("jLamp").textContent = lamp;
+    $("jBar").style.width = ((i + 1) / steps.length * 100) + "%";
+    $("jPrev").disabled = i === 0;
+    $("jNext").disabled = i === steps.length - 1;
+  }
+  $("jPrev").onclick = () => { if (i > 0) { i--; show(); } };
+  $("jNext").onclick = () => { if (i < steps.length - 1) { i++; show(); } };
+  const list = $("jList");
+  steps.forEach(s => { const li = document.createElement("li"); li.textContent = s[1] + (s[2] ? " — " + s[2] : ""); list.appendChild(li); });
+  $("jAll").onclick = () => { list.hidden = !list.hidden; $("jAll").textContent = list.hidden ? "Show all steps" : "Hide all steps"; };
+  show();
+</script>
+</body>
+</html>

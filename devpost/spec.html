@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumi Spec</title>
+<style>
+  :root {
+    --bg: #fbf8f3; --card: #ffffff; --ink: #2b2633; --muted: #6b6475;
+    --line: #e7e0d6; --accent: #d98f2b; --accent-soft: #fdf1dc;
+    --lamp: #4f7cac; --lamp-soft: #e6eef7; --page: #3f8f5f; --page-soft: #e5f3ea;
+    --ai: #8a5cc2; --ai-soft: #f1eafa; --warn: #b5523b; --warn-soft: #fbe9e4;
+    --code-bg: #f3efe8;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1a20; --card: #26232b; --ink: #f1edf5; --muted: #a9a2b3;
+      --line: #3a3541; --accent: #f0b85c; --accent-soft: #3a2f1c;
+      --lamp: #86aedb; --lamp-soft: #22303f; --page: #6fc08f; --page-soft: #1f3328;
+      --ai: #b994e6; --ai-soft: #302540; --warn: #e48a73; --warn-soft: #3d241e;
+      --code-bg: #1a181e;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding: 32px 16px 64px;
+  }
+  main { max-width: 880px; margin: 0 auto; }
+  .badge {
+    display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .04em;
+    text-transform: uppercase; padding: 3px 10px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  h1 { font-size: 38px; line-height: 1.1; margin: 6px 0; }
+  .tagline { font-size: 18px; color: var(--muted); margin: 0 0 24px; }
+  h2 { font-size: 22px; margin: 40px 0 12px; }
+  h3 { font-size: 17px; margin: 0 0 6px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 18px 22px; margin: 12px 0;
+  }
+  .three { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+  .three .card { margin: 0; }
+  .three .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  .piece { border-top: 5px solid; }
+  .piece.lamp { border-top-color: var(--lamp); }
+  .piece.page { border-top-color: var(--page); }
+  .piece.ai { border-top-color: var(--ai); }
+  .boss { border-left: 6px solid var(--accent); background: var(--accent-soft); }
+  .boss p { margin: 0; }
+  .diagram { overflow-x: auto; }
+  .diagram svg { display: block; min-width: 700px; width: 100%; height: auto; }
+  code, pre { font-family: ui-monospace, Consolas, monospace; font-size: .9em; }
+  pre { background: var(--code-bg); border-radius: 10px; padding: 12px 14px; overflow-x: auto; margin: 8px 0; }
+  .table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .03em; }
+
+  /* USB decoder */
+  .decoder { display: flex; flex-wrap: wrap; gap: 4px; margin: 10px 0; font-family: ui-monospace, Consolas, monospace; }
+  .decoder button {
+    font: inherit; font-size: 15px; padding: 6px 9px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--code-bg); color: var(--ink);
+  }
+  .decoder button.on { background: var(--lamp); color: #fff; border-color: var(--lamp); }
+  .decoded { min-height: 2.6em; color: var(--muted); }
+  .decoded b { color: var(--ink); }
+
+  /* Journey */
+  .phase { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .stepnum { font-size: 14px; color: var(--muted); }
+  .steptext { font-size: 18px; margin: 6px 0; min-height: 3em; }
+  .where { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 4px; }
+  .chip { font-size: 13px; font-weight: 600; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .chip.lamp.on { background: var(--lamp-soft); color: var(--lamp); border-color: var(--lamp); }
+  .chip.page.on { background: var(--page-soft); color: var(--page); border-color: var(--page); }
+  .chip.ai.on { background: var(--ai-soft); color: var(--ai); border-color: var(--ai); }
+  .wire { font-family: ui-monospace, Consolas, monospace; font-size: 14px; color: var(--muted); min-height: 1.5em; }
+  .meta { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; margin: 14px 0; }
+  .bar span { display: block; height: 100%; background: var(--accent); width: 0; transition: width .25s ease; }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; }
+  .controls button {
+    font: inherit; font-size: 14px; padding: 6px 14px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  }
+  .controls button:disabled { opacity: .4; cursor: default; }
+
+  details {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    margin: 10px 0; padding: 0 18px;
+  }
+  summary {
+    cursor: pointer; padding: 14px 0; font-weight: 600; font-size: 17px;
+    list-style: none; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; margin-left: auto; color: var(--muted); font-size: 20px; }
+  details[open] summary::after { content: "−"; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  .file { font-family: ui-monospace, Consolas, monospace; font-size: 13px; font-weight: 400; color: var(--muted); }
+  details > div { padding-bottom: 14px; }
+  details p { margin: 0 0 10px; }
+  .prdref { font-size: 13px; color: var(--muted); }
+  .fail { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+  .fail div { border-radius: 12px; padding: 14px; border: 1px solid var(--warn); background: var(--warn-soft); }
+  .fail b { display: block; margin-bottom: 4px; }
+  .fail span { font-size: 14px; color: var(--muted); }
+  ul.tight { margin: 0; padding-left: 20px; }
+  .tag { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); margin-left: 4px; }
+  footer { margin-top: 48px; font-size: 14px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+
+<span class="badge">Spec · Approved</span>
+<h1>Lumi — Technical Spec</h1>
+<p class="tagline">How the three pieces of Lumi work together, and how the demo session flows through them.</p>
+
+<h2>How This Works, In Plain Language</h2>
+<div class="three">
+  <div class="card piece lamp"><h3>1. The lamp</h3><p>Arduino + distance sensor + small screen + buzzer. Decides if you're there, runs the countdown, draws the eyes and messages.</p></div>
+  <div class="card piece page"><h3>2. The web page</h3><p>Runs in Chrome or Edge. Talks to the lamp over the USB cable using <b>Web Serial</b>. Shows the timer, settings, and the study buddy.</p></div>
+  <div class="card piece ai"><h3>3. The study server</h3><p>A small program on your computer. Keeps your notes and talks to Gemini. Your API key lives only here, in <code>.env</code>.</p></div>
+</div>
+<div class="card boss">
+  <p><b>The lamp is the boss of the timer.</b> The page just copies what the lamp says. The AI lives on the server. That's why an AI problem can never stop your study session.</p>
+</div>
+
+<div class="card diagram">
+  <svg viewBox="0 0 820 290" role="img" aria-labelledby="archT">
+    <title id="archT">The lamp sends status lines to the web page over USB, the page sends commands back. The page calls the study server, which stores notes and calls Gemini.</title>
+    <defs>
+      <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+      </marker>
+    </defs>
+    <g font-family="system-ui, sans-serif" font-size="13" text-anchor="middle">
+      <text x="410" y="18" fill="var(--muted)" font-weight="700">ALL ON YOUR COMPUTER (no deployment)</text>
+      <rect x="6" y="28" width="640" height="252" rx="16" fill="none" stroke="var(--line)" stroke-dasharray="6 5"/>
+
+      <!-- Lamp -->
+      <rect x="24" y="70" width="170" height="130" rx="14" fill="var(--lamp-soft)" stroke="var(--lamp)" stroke-width="2"/>
+      <text x="109" y="96" fill="var(--ink)" font-weight="700" font-size="15">Lamp</text>
+      <text x="109" y="118" fill="var(--muted)">sensor → am I here?</text>
+      <text x="109" y="136" fill="var(--muted)">countdown (the boss)</text>
+      <text x="109" y="154" fill="var(--muted)">eyes · messages · tune</text>
+      <text x="109" y="182" fill="var(--lamp)" font-size="12">lumi_lamp.ino</text>
+
+      <!-- Page -->
+      <rect x="262" y="70" width="170" height="130" rx="14" fill="var(--page-soft)" stroke="var(--page)" stroke-width="2"/>
+      <text x="347" y="96" fill="var(--ink)" font-weight="700" font-size="15">Web page</text>
+      <text x="347" y="118" fill="var(--muted)">timer card · settings</text>
+      <text x="347" y="136" fill="var(--muted)">Focus mode</text>
+      <text x="347" y="154" fill="var(--muted)">study buddy quiz</text>
+      <text x="347" y="182" fill="var(--page)" font-size="12">web/index.html</text>
+
+      <!-- Server -->
+      <rect x="470" y="70" width="160" height="130" rx="14" fill="var(--ai-soft)" stroke="var(--ai)" stroke-width="2"/>
+      <text x="550" y="96" fill="var(--ink)" font-weight="700" font-size="15">Study server</text>
+      <text x="550" y="118" fill="var(--muted)">your notes (chunks)</text>
+      <text x="550" y="136" fill="var(--muted)">quiz question · grade</text>
+      <text x="550" y="154" fill="var(--muted)">API key in .env</text>
+      <text x="550" y="182" fill="var(--ai)" font-size="12">server/server.js</text>
+
+      <!-- Gemini -->
+      <rect x="680" y="95" width="130" height="80" rx="14" fill="var(--card)" stroke="var(--ai)" stroke-dasharray="4 3"/>
+      <text x="745" y="128" fill="var(--ink)" font-weight="700">Gemini</text>
+      <text x="745" y="148" fill="var(--muted)">on the internet</text>
+
+      <!-- Lamp <-> page -->
+      <line x1="194" y1="112" x2="258" y2="112" stroke="var(--lamp)" stroke-width="2" marker-end="url(#a)"/>
+      <text x="228" y="62" fill="var(--lamp)" font-size="12">USB cable</text>
+      <text x="228" y="104" fill="var(--muted)" font-size="11">S,4,312…</text>
+      <line x1="258" y1="158" x2="198" y2="158" stroke="var(--page)" stroke-width="2" marker-end="url(#a)"/>
+      <text x="228" y="176" fill="var(--muted)" font-size="11">F40 · M…</text>
+
+      <!-- page <-> server -->
+      <line x1="432" y1="135" x2="466" y2="135" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#a)"/>
+      <text x="450" y="226" fill="var(--muted)" font-size="12">/api/upload</text>
+      <text x="450" y="242" fill="var(--muted)" font-size="12">/api/quiz/…</text>
+
+      <!-- server <-> gemini -->
+      <line x1="630" y1="135" x2="676" y2="135" stroke="var(--ai)" stroke-width="1.5" marker-end="url(#a)"/>
+
+      <text x="109" y="232" fill="var(--muted)" font-size="12">EEPROM: today's total</text>
+      <text x="347" y="232" fill="var(--muted)" font-size="12">localStorage: settings</text>
+      <text x="550" y="262" fill="var(--muted)" font-size="12">server/data/: notes</text>
+    </g>
+  </svg>
+</div>
+
+<h2>Your Useful Unknown: How the Page Talks to the Lamp</h2>
+<div class="card">
+  <p style="margin-top:0">Every second, the lamp sends one line like this. <b>Click any value</b> to see what it means:</p>
+  <div class="decoder" id="decoder"></div>
+  <div class="decoded" id="decoded">Click a value above.</div>
+  <p style="margin-bottom:6px">The page sends short commands back. The first letter is the kind of command:</p>
+  <pre>F40               → focus length is 40 minutes
+MREVIEW: MITOSIS  → show this message for about 4 seconds (21 characters max)
+T                 → play the tune</pre>
+  <p style="margin:12px 0 0"><b>Try it yourself during the build</b> (about 5 minutes, no code changes): with the page disconnected, open the Arduino IDE's <b>Serial Monitor</b> at 115200 baud. Watch the mode change from <code>0</code> to <code>3</code> to <code>4</code> as you sit down. Then type <code>MHELLO</code> and watch it appear on Lumi's screen.</p>
+</div>
+
+<h2>The Core Journey Through the System</h2>
+<div class="card" id="journey">
+  <div class="phase" id="jPhase"></div>
+  <div class="stepnum" id="jNum"></div>
+  <div class="where">
+    <span class="chip lamp" id="cLamp">Lamp</span>
+    <span class="chip page" id="cPage">Web page</span>
+    <span class="chip ai" id="cAi">Server + Gemini</span>
+  </div>
+  <div class="steptext" id="jText"></div>
+  <div class="wire" id="jWire"></div>
+  <div class="meta" id="jMeta"></div>
+  <div class="bar"><span id="jBar"></span></div>
+  <div class="controls">
+    <button type="button" id="jPrev">← Back</button>
+    <button type="button" id="jNext">Next →</button>
+  </div>
+  <noscript><p>Turn on JavaScript to step through, or read <code>spec.md &gt; The Core Journey Through the System</code>.</p></noscript>
+</div>
+
+<h2>Components</h2>
+<details open>
+  <summary><span class="dot" style="background:var(--lamp)"></span>Lamp Program <span class="file">arduino/lumi_lamp/lumi_lamp.ino</span></summary>
+  <div>
+    <p>Reads the sensor, runs the session, draws the screen, and talks to the page.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Setting</th><th>Value</th><th>Meaning</th></tr>
+      <tr><td><code>SIT_DISTANCE_CM</code></td><td>40</td><td>Closer than this means you're at the desk</td></tr>
+      <tr><td><code>START_DELAY_MS</code></td><td>5000</td><td>Sit this long before the timer starts or resumes</td></tr>
+      <tr><td><code>AWAY_GRACE_MS</code></td><td>10000</td><td>Away this long, and it shows "Paused"</td></tr>
+      <tr><td><code>GIVE_UP_SEC</code></td><td>300</td><td>Paused this long, and the session is cancelled</td></tr>
+      <tr><td><code>DONE_SHOW_SEC</code></td><td>3</td><td>How long "Done!" shows</td></tr>
+      <tr><td><code>SAVE_EVERY_MS</code></td><td>60000</td><td>Save today's total every minute</td></tr>
+    </table></div>
+    <p style="margin-top:10px"><b>Your decision:</b> the countdown stops the moment you leave. Time away never counts.</p>
+    <p class="prdref">PRD: Noticing You (Presence Timer) · Pausing When You Leave · Finishing a Session</p>
+  </div>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--lamp)"></span>USB Messages (Page ↔ Lamp)</summary>
+  <div>
+    <p><b>Lamp → page:</b> <code>S,mode,focusDone,focusMin,breakMin,modeSec,dist,pomos,today,here,overlay,pending</code> every second, plus <code>E,DONE</code> when a session finishes.</p>
+    <p><b>Page → lamp:</b> <code>A</code> acknowledge saved seconds · <code>K</code> task · <code>F</code> focus length · <code>B</code> break length · <code>M</code> message (21 characters max) · <code>T</code> tune.</p>
+    <p class="prdref">PRD: Connecting the Lamp · Weak Spots on the Lamp</p>
+  </div>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--page)"></span>Web Page: Connection and Timer <span class="file">web/index.html</span></summary>
+  <div>
+    <p>Connects to the lamp, reads its status lines, shows the timer card (character, progress ring, countdown, focusing/paused/break label), and sends the focus time. Shows "Lost the lamp connection. Plug it back in…" if the cable is pulled.</p>
+    <p class="prdref">PRD: Connecting the Lamp · Noticing You · States and Boundaries</p>
+  </div>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--page)"></span>Web Page: Focus Mode <span class="file">web/index.html</span></summary>
+  <div>
+    <p>Hides everything except the timer. The exit button or Esc brings the page back. The timer keeps running, because the lamp drives it.</p>
+    <p class="prdref">PRD: Focus Mode</p>
+  </div>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--page)"></span>Web Page: Study Buddy Quiz <span class="file">web/index.html</span></summary>
+  <div>
+    <p>5 questions, one at a time. Asks the server for each question, shows "Question N of 5 · Topic," sends answers for grading, and keeps score per topic. New weak spot → sends <code>MREVIEW: TOPIC</code> to the lamp. Ends with the score, weak spots, and what to review next.</p>
+    <p class="prdref">PRD: AI Study Buddy Quiz · Weak Spots on the Lamp</p>
+  </div>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--ai)"></span>Study Server <span class="file">server/server.js</span></summary>
+  <div>
+    <p>Serves the page, receives uploads, picks the most relevant chunks of your notes by matching keywords, and calls Gemini. Only listens on your own computer.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Endpoint</th><th>What it does</th></tr>
+      <tr><td><code>GET /api/status</code></td><td>Is the AI ready? Is it in Practice mode?</td></tr>
+      <tr><td><code>POST /api/upload</code></td><td>Receives note files, pulls out the text, saves chunks</td></tr>
+      <tr><td><code>POST /api/quiz/question</code></td><td>Returns <code>{topic, question, answer}</code> from your notes</td></tr>
+      <tr><td><code>POST /api/quiz/grade</code></td><td>Returns <code>{correct, feedback}</code></td></tr>
+    </table></div>
+    <p class="prdref" style="margin-top:10px">PRD: AI Study Buddy Quiz</p>
+  </div>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--muted)"></span>Full Feature List Extras</summary>
+  <div><p>Tasks, progress, mission, notebook, the other study buddy buttons, the session report, and so on. They live in the same files. <b>The build doesn't change them</b> unless they get in the way of the demo.</p></div>
+</details>
+
+<h2>Where Information Lives</h2>
+<div class="card table-wrap">
+  <table>
+    <tr><th>Information</th><th>Where</th><th>When you come back</th></tr>
+    <tr><td>Countdown and mode</td><td>Lamp's memory</td><td>Lost if unplugged</td></tr>
+    <tr><td>Today's total, focus and break length</td><td>Lamp's EEPROM (survives power loss)</td><td>Kept (at most 1 minute lost)</td></tr>
+    <tr><td>Uploaded notes</td><td><code>server/data/courses/</code></td><td>Kept</td></tr>
+    <tr><td>Session logs</td><td><code>server/data/sessions/</code></td><td>Kept</td></tr>
+    <tr><td>Quiz score and weak spots</td><td>Web page's memory</td><td>Lost on page reload</td></tr>
+    <tr><td>Settings, tasks, progress</td><td>Browser localStorage</td><td>Kept in that browser</td></tr>
+    <tr><td>Gemini key</td><td><code>.env</code> (never in git)</td><td>Kept</td></tr>
+  </table>
+</div>
+
+<h2>Where It Runs</h2>
+<div class="card">
+  <p style="margin-top:0"><b>Locally, on your computer. No deployment.</b> You need Node.js 18+, Chrome or Edge, the lamp on USB, and your key in <code>.env</code>.</p>
+  <pre>npm install     (first time only)
+npm start</pre>
+  <p>Open <b>http://localhost:8787</b> and click <b>Connect lamp</b>. Close the Arduino Serial Monitor first, since only one program can use the USB connection at a time.</p>
+  <p style="margin-bottom:0"><b>For the video:</b> about 1-minute custom focus time · notes uploaded first · Focus mode for the timer moments · scroll to the Study buddy for the quiz.</p>
+</div>
+
+<h2>File Structure</h2>
+<div class="card">
+<pre>lumi-study-lamp/
+├── arduino/lumi_lamp/lumi_lamp.ino   # The lamp
+├── web/index.html                    # The whole web page
+├── server/server.js                  # Study server + Gemini calls
+├── server/data/                      # Your notes and logs (NOT in git)
+├── devpost/                          # Planning docs
+├── .env                              # Your Gemini key (NOT in git)
+├── .env.example                      # Safe template (in git)
+├── package.json                      # npm start
+└── README.md</pre>
+</div>
+
+<h2>Where It Could Break</h2>
+<div class="fail">
+  <div><b>Gemini slow or offline</b><span>Friendly "Try again" message. Lamp and timer keep going. <span class="tag">check in build</span> Quiz progress is kept.</span></div>
+  <div><b>Quiz with no notes</b><span>Server already says "Add a course file or write a note first…"</span></div>
+  <div><b>Lamp unplugged</b><span>"Lost the lamp connection. Plug it back in…" At most 1 minute lost.</span></div>
+  <div><b>Connect fails</b><span>Usually the Serial Monitor is still open, or the browser isn't Chrome or Edge.</span></div>
+  <div><b>Long weak-spot topic</b><span>The lamp shows 21 characters max. <span class="tag">check in build</span></span></div>
+</div>
+
+<h2>Decisions</h2>
+<div class="card">
+  <h3>Yours</h3>
+  <ul class="tight">
+    <li>Keep the lamp's pause behavior: the countdown stops the moment you leave, and the session is cancelled after 5 minutes away.</li>
+    <li>Keep the existing stack. It works, and the AI is tested with your real key.</li>
+    <li>Run locally and record the video. No deployment.</li>
+  </ul>
+  <h3 style="margin-top:14px">Derived from yours</h3>
+  <ul class="tight">
+    <li>The build checks and fixes. It doesn't rebuild.</li>
+    <li>New styling reuses the existing colors and classes.</li>
+  </ul>
+</div>
+
+<footer>This page is a visual companion. The official plan is <code>devpost/spec.md</code>.</footer>
+</main>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  // USB status line decoder
+  const fields = [
+    ["S", "Type", "S means \"status line.\""],
+    ["4", "mode", "4 = focusing. (0 away · 1 paused · 2 asleep · 3 saying hi · 4 focus · 5 done · 6 break)"],
+    ["312", "focusDone", "312 seconds studied in this session so far."],
+    ["25", "focusMin", "The focus length is 25 minutes."],
+    ["5", "breakMin", "The break length is 5 minutes."],
+    ["12", "modeSec", "12 seconds in the current mode."],
+    ["35", "dist", "The sensor sees something 35 cm away. Under 40 means you're there."],
+    ["2", "pomos", "2 focus sessions finished today."],
+    ["4800", "today", "4800 seconds (80 minutes) studied today."],
+    ["1", "here", "1 = someone is at the desk."],
+    ["0", "overlay", "0 = no stats or message covering the screen right now."],
+    ["0", "pending", "0 studied seconds that the page hasn't confirmed yet. The page confirms them with an A command."]
+  ];
+  const dec = $("decoder");
+  fields.forEach((f, idx) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = f[0];
+    b.onclick = () => {
+      dec.querySelectorAll("button").forEach(x => x.classList.remove("on"));
+      b.classList.add("on");
+      $("decoded").innerHTML = "<b>" + f[1] + "</b> · " + f[2].replace(/</g, "&lt;");
+    };
+    dec.appendChild(b);
+    if (idx < fields.length - 1) { const c = document.createElement("span"); c.textContent = ","; c.style.alignSelf = "center"; dec.appendChild(c); }
+  });
+
+  // Journey stepper: [phase, text, wire, meta, lamp, page, ai]
+  const steps = [
+    ["Before", "You run npm start. The server starts and serves the page at localhost:8787.", "", "server/server.js", 0, 0, 1],
+    ["Before", "You click Connect lamp. The page opens the USB connection, and status lines start arriving.", "lamp → page:  S,0,0,25,5,…", "Web Serial · 115200 baud", 1, 1, 0],
+    ["Before", "You pick a focus time. The page tells the lamp, and the lamp saves it.", "page → lamp:  F25", "PRD: Connecting the Lamp", 1, 1, 0],
+    ["Before", "You upload notes. The server pulls out the text, splits it into chunks, and saves them.", "POST /api/upload", "server/data/courses/", 0, 1, 1],
+    ["Timer moments", "Nobody is near. The lamp is in mode 0 and draws the eyes.", "lamp → page:  S,0,…", "PRD: Noticing You", 1, 1, 0],
+    ["Timer moments", "You sit within 40 cm. Mode 3: a bar fills for 5 seconds. Then mode 4: the countdown starts, and the page shows \"focusing.\"", "lamp → page:  S,3,…  then  S,4,…", "PRD: Noticing You", 1, 1, 0],
+    ["Timer moments", "You get up. The countdown stops at once. \"Where'd you go?\" with 10…9…8. After 10 s, mode 1 (paused). After 5 min, cancelled.", "lamp → page:  S,1,…", "PRD: Pausing When You Leave", 1, 1, 0],
+    ["Timer moments", "You sit back down for 5 seconds. Back to mode 4, and the countdown continues.", "lamp → page:  S,4,…", "PRD: Pausing When You Leave", 1, 1, 0],
+    ["AI moment", "You click Quiz me. The server picks your most relevant note chunks and asks Gemini for one question.", "POST /api/quiz/question → {topic, question, answer}", "PRD: AI Study Buddy Quiz · lamp keeps counting", 0, 1, 1],
+    ["AI moment", "You type an answer and press Enter. Gemini judges it.", "POST /api/quiz/grade → {correct, feedback}", "PRD: AI Study Buddy Quiz", 0, 1, 1],
+    ["AI moment", "A topic is missed more often than right, so it becomes a weak spot. The page tells the lamp.", "page → lamp:  MREVIEW: MITOSIS", "PRD: Weak Spots on the Lamp · shows ~4 s", 1, 1, 0],
+    ["AI moment", "After 5 questions: \"Quiz done: 4/5 correct (80%),\" weak spots, and what to review next.", "", "Computed on the page", 0, 1, 0],
+    ["Finish", "00:00. The lamp plays a tune, shows \"Done! Break time,\" and tells the page.", "lamp → page:  E,DONE", "PRD: Finishing a Session", 1, 1, 0]
+  ];
+  let i = 0;
+  function show() {
+    const s = steps[i];
+    $("jPhase").textContent = s[0];
+    $("jPhase").style.color = s[0] === "AI moment" ? "var(--ai)" : s[0] === "Timer moments" ? "var(--lamp)" : s[0] === "Finish" ? "var(--page)" : "var(--accent)";
+    $("jNum").textContent = "Step " + (i + 1) + " of " + steps.length;
+    $("jText").textContent = s[1];
+    $("jWire").textContent = s[2];
+    $("jMeta").textContent = s[3];
+    $("cLamp").classList.toggle("on", !!s[4]);
+    $("cPage").classList.toggle("on", !!s[5]);
+    $("cAi").classList.toggle("on", !!s[6]);
+    $("jBar").style.width = ((i + 1) / steps.length * 100) + "%";
+    $("jPrev").disabled = i === 0;
+    $("jNext").disabled = i === steps.length - 1;
+  }
+  $("jPrev").onclick = () => { if (i > 0) { i--; show(); } };
+  $("jNext").onclick = () => { if (i < steps.length - 1) { i++; show(); } };
+  show();
+</script>
+</body>
+</html>

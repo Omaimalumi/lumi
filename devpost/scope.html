@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumi Scope</title>
+<style>
+  :root {
+    --bg: #fbf8f3; --card: #ffffff; --ink: #2b2633; --muted: #6b6475;
+    --line: #e7e0d6; --accent: #e8a33d; --accent-soft: #fdf1dc;
+    --calm: #4f7cac; --calm-soft: #e6eef7; --ai: #8a5cc2; --ai-soft: #f1eafa;
+    --good: #3f8f5f; --good-soft: #e5f3ea;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1a20; --card: #26232b; --ink: #f1edf5; --muted: #a9a2b3;
+      --line: #3a3541; --accent: #f0b85c; --accent-soft: #3a2f1c;
+      --calm: #86aedb; --calm-soft: #22303f; --ai: #b994e6; --ai-soft: #302540;
+      --good: #6fc08f; --good-soft: #1f3328;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding: 32px 16px 64px;
+  }
+  main { max-width: 820px; margin: 0 auto; }
+  header { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+  .badge {
+    display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .04em;
+    text-transform: uppercase; padding: 3px 10px; border-radius: 999px;
+    background: var(--good-soft); color: var(--good);
+  }
+  h1 { font-size: 40px; line-height: 1.1; margin: 4px 0; }
+  .tagline { font-size: 19px; color: var(--muted); margin: 0 0 28px; }
+  h2 { font-size: 22px; margin: 40px 0 12px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px 22px; margin: 12px 0;
+  }
+  .kernel { border-left: 6px solid var(--accent); background: var(--accent-soft); }
+  .kernel p { margin: 0; font-size: 18px; }
+  blockquote {
+    margin: 12px 0 0; padding: 10px 16px; border-left: 3px solid var(--line);
+    color: var(--muted); font-style: italic;
+  }
+  .diagram { overflow-x: auto; }
+  .diagram svg { display: block; min-width: 640px; width: 100%; height: auto; }
+  .steps { list-style: none; padding: 0; margin: 0; counter-reset: s; }
+  .steps li {
+    counter-increment: s; position: relative; padding: 12px 14px 12px 52px;
+    border-bottom: 1px solid var(--line);
+  }
+  .steps li:last-child { border-bottom: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 12px; top: 12px;
+    width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--calm-soft); color: var(--calm); font-weight: 700; font-size: 14px;
+  }
+  .steps li.ai::before { background: var(--ai-soft); color: var(--ai); }
+  .steps li.wow::before { background: var(--accent); color: #fff; }
+  .tag { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; margin-left: 6px; }
+  .tag.wow { background: var(--accent-soft); color: var(--accent); }
+  .tag.ai { background: var(--ai-soft); color: var(--ai); }
+  .stepper { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+  .stepper button {
+    font: inherit; font-size: 14px; padding: 6px 14px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  }
+  .stepper button:disabled { opacity: .4; cursor: default; }
+  .shot { font-size: 14px; color: var(--muted); }
+  .shot-title { font-size: 20px; font-weight: 600; margin: 4px 0; }
+  details {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    margin: 10px 0; padding: 0 18px;
+  }
+  summary {
+    cursor: pointer; padding: 14px 0; font-weight: 600; font-size: 17px;
+    list-style: none; display: flex; align-items: center; gap: 10px;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; margin-left: auto; color: var(--muted); font-size: 20px; }
+  details[open] summary::after { content: "−"; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  details ul { margin: 0 0 16px; padding-left: 22px; }
+  details p { margin: 0 0 16px; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .grid .card h3 { margin: 0 0 6px; font-size: 16px; }
+  .grid .card p { margin: 0; color: var(--muted); }
+  footer { margin-top: 48px; font-size: 14px; color: var(--muted); }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: .92em; }
+</style>
+</head>
+<body>
+<main>
+
+<span class="badge">Scope · Approved</span>
+<h1>Lumi</h1>
+<p class="tagline">A friendly desk study companion that notices when you sit down, counts down your study time, and pauses when you leave.</p>
+
+<h2>The Unique Kernel</h2>
+<div class="card kernel">
+  <p>Lumi <strong>notices you</strong>. You don't start a timer. You sit down and it starts. When you walk away, it asks <em>"where'd you go?"</em> and pauses. This keeps you honest about how long you really studied, and the cute animated eyes make it fun instead of boring.</p>
+</div>
+
+<h2>How a Session Flows</h2>
+<div class="card diagram" aria-label="Diagram of the Lumi study session">
+  <svg viewBox="0 0 760 300" role="img" aria-labelledby="dgTitle">
+    <title id="dgTitle">The student sits down, Lumi counts down, pauses if the student leaves, and ends with DONE. The AI study buddy quizzes the student during the session.</title>
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+      </marker>
+    </defs>
+    <g font-family="system-ui, sans-serif" font-size="14" text-anchor="middle" style="color: var(--muted)">
+      <!-- Nodes -->
+      <rect x="10" y="40" width="130" height="64" rx="12" fill="var(--calm-soft)" stroke="var(--calm)"/>
+      <text x="75" y="68" fill="var(--ink)" font-weight="600">Friendly eyes</text>
+      <text x="75" y="88" fill="var(--muted)">nobody there</text>
+
+      <rect x="200" y="40" width="130" height="64" rx="12" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
+      <text x="265" y="68" fill="var(--ink)" font-weight="600">Sit down</text>
+      <text x="265" y="88" fill="var(--muted)">5-second bar</text>
+
+      <rect x="390" y="40" width="150" height="64" rx="12" fill="var(--good-soft)" stroke="var(--good)"/>
+      <text x="465" y="68" fill="var(--ink)" font-weight="600">Countdown</text>
+      <text x="465" y="88" fill="var(--muted)">screen + web page</text>
+
+      <rect x="610" y="40" width="140" height="64" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/>
+      <text x="680" y="68" fill="var(--ink)" font-weight="600">Tune + DONE</text>
+      <text x="680" y="88" fill="var(--muted)">at 00:00</text>
+
+      <rect x="390" y="200" width="150" height="64" rx="12" fill="var(--calm-soft)" stroke="var(--calm)"/>
+      <text x="465" y="226" fill="var(--ink)" font-weight="600">"Where'd you go?"</text>
+      <text x="465" y="246" fill="var(--muted)">paused after 10 s</text>
+
+      <rect x="180" y="200" width="150" height="64" rx="12" fill="var(--ai-soft)" stroke="var(--ai)"/>
+      <text x="255" y="226" fill="var(--ink)" font-weight="600">AI study buddy</text>
+      <text x="255" y="246" fill="var(--muted)">quiz on your notes</text>
+
+      <!-- Edges -->
+      <line x1="140" y1="72" x2="196" y2="72" stroke="currentColor" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <line x1="330" y1="72" x2="386" y2="72" stroke="currentColor" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <line x1="540" y1="72" x2="606" y2="72" stroke="currentColor" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <path d="M450,104 L450,196" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <text x="436" y="155" text-anchor="end" fill="var(--muted)" font-size="13">leave</text>
+      <path d="M480,196 L480,108" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <text x="494" y="155" text-anchor="start" fill="var(--muted)" font-size="13">sit back 5 s</text>
+
+      <path d="M420,104 Q330,150 300,196" fill="none" stroke="var(--ai)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+      <text x="330" y="140" fill="var(--ai)" font-size="13">while studying</text>
+
+      <text x="265" y="24" fill="var(--accent)" font-weight="700" font-size="13">★ the "oh, that's cool" moment</text>
+    </g>
+  </svg>
+</div>
+
+<h2>Who It's For</h2>
+<div class="card">
+  You first, and any other student with a short attention span who wants to stay focused and get better scores. A normal timer keeps counting while you're away, and it has no personality.
+  <blockquote>"I have been using study timers for a very long time, and at this point they feel boring."</blockquote>
+</div>
+
+<h2>The Core Loop</h2>
+<div class="card">
+  <ol class="steps">
+    <li>Open the web page, connect Lumi over USB, and pick a study time (for example, 25 or 40 minutes).</li>
+    <li>Lumi's screen shows friendly animated eyes while nobody is there.</li>
+    <li class="wow">Sit down within about 40 cm. A bar fills for 5 seconds, then the countdown starts on Lumi's screen and on the web page.<span class="tag wow">the cool moment</span></li>
+    <li class="ai">While studying, upload your notes and let the AI study buddy quiz you on them.<span class="tag ai">AI</span></li>
+    <li>Get up, and the screen asks "where'd you go?" After 10 seconds, the timer pauses. Sit back down for 5 seconds, and it continues.</li>
+    <li>At 00:00, Lumi plays a tune and shows "DONE."</li>
+  </ol>
+  <p style="margin:14px 0 0;color:var(--muted)">Students come back because it keeps them on track in a fun way, and the time it shows is time they really studied.</p>
+</div>
+
+<h2>The Demo Video, Shot by Shot</h2>
+<div class="card" id="demo">
+  <div class="shot" id="shotNum">Shot 1 of 5</div>
+  <div class="shot-title" id="shotTitle"></div>
+  <div id="shotText"></div>
+  <div class="stepper">
+    <button id="prev" type="button">← Back</button>
+    <button id="next" type="button">Next →</button>
+  </div>
+  <noscript>
+    <ol>
+      <li>Friendly eyes on the screen while nobody is there.</li>
+      <li>Sitting down starts the countdown.</li>
+      <li>Leaving pauses it ("where'd you go?").</li>
+      <li>The AI study buddy quizzing you on your own notes.</li>
+      <li>The tune and "DONE" at 00:00.</li>
+    </ol>
+  </noscript>
+  <p style="margin:16px 0 0;color:var(--muted);font-size:14px">The video shows the screen and your hands; you won't appear on camera.</p>
+</div>
+
+<h2>Inspiration &amp; Identity</h2>
+<div class="grid">
+  <div class="card"><h3>Feel</h3><p>Cute, friendly, and encouraging. A small companion with eyes, not a strict timer.</p></div>
+  <div class="card"><h3>Why it matters to you</h3><p>"It keeps me honest about how long I studied, without any distractions and losing focus."</p></div>
+  <div class="card"><h3>Future home</h3><p>Later, it will live inside a real lamp.</p></div>
+</div>
+
+<h2>What's In, What's Later</h2>
+<details open>
+  <summary><span class="dot" style="background:var(--good)"></span>In: the proof of concept</summary>
+  <ul>
+    <li>Connecting Lumi to the web page over USB, and choosing the study time</li>
+    <li>Friendly animated eyes when nobody is there</li>
+    <li>Sit down → 5-second bar → countdown starts (on Lumi's screen and the web page)</li>
+    <li>Leave → "where'd you go?" → pause after 10 seconds → resume after sitting back down for 5 seconds</li>
+    <li>Tune and "DONE" at 00:00</li>
+    <li>Uploading notes, and the AI study buddy (Gemini) quizzing you on them</li>
+  </ul>
+  <p>Most of this is already built. This hackathon is about making it run smoothly as one session and getting it ready for the demo, not about building new features.</p>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--accent)"></span>Later: worth doing, just not now</summary>
+  <ul>
+    <li><strong>Session report:</strong> a short AI-written summary at the end. A "nice extra if there's time."</li>
+    <li><strong>Break timer</strong> after "DONE"</li>
+    <li><strong>AI explanations</strong> of your notes (the quiz is the one AI moment for the demo)</li>
+    <li><strong>Weak spots</strong> shown on Lumi's screen (for example, <code>REVIEW: METAPHASE</code>)</li>
+    <li>Fitting the hardware inside a real lamp</li>
+  </ul>
+</details>
+<details>
+  <summary><span class="dot" style="background:var(--muted)"></span>Explicitly cut</summary>
+  <p>Nothing. You didn't name anything to drop. The focus is on showing and polishing the parts listed above, and the code for the "Later" features can stay in the project.</p>
+</details>
+
+<footer>This page is a visual companion. The official plan is <code>devpost/scope.md</code>.</footer>
+</main>
+
+<script>
+  const shots = [
+    ["Friendly eyes", "Lumi's screen shows cute animated eyes while nobody is there."],
+    ["Sit down → countdown ★", "You sit down, a bar fills for 5 seconds, and the countdown starts by itself on the screen and the web page. This is the \"oh, that's cool\" moment."],
+    ["Leave → pause", "You get up. The screen asks \"where'd you go?\" and after 10 seconds the timer pauses. Sit back down, and it continues."],
+    ["AI study buddy", "The AI study buddy (Gemini) quizzes you on your own notes."],
+    ["Tune + DONE", "At 00:00, Lumi plays a tune and shows \"DONE.\""]
+  ];
+  let i = 0;
+  const num = document.getElementById("shotNum"), title = document.getElementById("shotTitle"),
+        text = document.getElementById("shotText"), prev = document.getElementById("prev"),
+        next = document.getElementById("next");
+  function show() {
+    num.textContent = "Shot " + (i + 1) + " of " + shots.length;
+    title.textContent = shots[i][0];
+    text.textContent = shots[i][1];
+    prev.disabled = i === 0;
+    next.disabled = i === shots.length - 1;
+  }
+  prev.onclick = () => { if (i > 0) { i--; show(); } };
+  next.onclick = () => { if (i < shots.length - 1) { i++; show(); } };
+  show();
+</script>
+</body>
+</html>
