@@ -1208,6 +1208,7 @@ const STATES={
   waiting:{label:'Connecting',line:'Saying hello to the lamp…'},
   idle:{label:'Idle',line:'Ready when you are'},
   paused:{label:'Paused',line:"I'll keep your place"},
+  away:{label:'Away',line:"Where'd you go?"},
   focus:{label:'Focusing',line:'Studying with you'},
   done:{label:'Completed',line:'You did it!'},
   break:{label:'Break',line:'Take a little break'}
@@ -1227,7 +1228,11 @@ function computeView(now){
       v.ring=done/fm;v.time=clock(Math.max(fm-done,0));v.what='Stepped away mid-session';break}
     case 2:v.face={eyes:'closed',mouth:'o',zzz:1};v.cap='zzz';preview();v.what='The lamp is napping. Sit down to wake it';break;
     case 3:v.face={eyes:'happy',mouth:'smile',party:1};v.cap='hi omaima ♡';preview();v.what='Saying hi';break;
-    case 4:{const fm=st.focusMin*60000,done=st.focusDone*1000+since(now),left=Math.max(fm-done,0),wide=st.dist>0&&st.dist<15;v.state='focus';
+    case 4:if(!st.here){   // stepped away: the lamp has stopped counting and waits up to 10 s before "Paused"
+        const fm=st.focusMin*60000,done=st.focusDone*1000;v.state='away';
+        v.face={eyes:'open',px:Math.floor(now/700)%2?8:-8,py:0,open:1,mouth:'o'};v.cap="where'd you go?";
+        v.ring=done/fm;v.time=clock(Math.max(fm-done,0));v.what='Timer stopped. Come back to keep going';break}
+      {const fm=st.focusMin*60000,done=st.focusDone*1000+since(now),left=Math.max(fm-done,0),wide=st.dist>0&&st.dist<15;v.state='focus';
       v.face={eyes:'open',px:0,py:wide?0:6,open:1,wide,mouth:wide?'o':'smile',prop:'book'};
       v.cap=wide?'ooh, so close!':'studying with you';v.ring=done/fm;v.time=clock(left);v.what='left in session '+(st.pomos+1);break}
     case 5:v.state='done';v.face={eyes:'happy',mouth:'big',party:1};v.cap='you did it ♡';v.ring=1;v.time='00:00';v.what='Session finished. Time for a break';break;

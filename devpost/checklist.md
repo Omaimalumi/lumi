@@ -21,7 +21,7 @@ Lumi is already built, so each slice **checks one part of the demo session end t
   Learner check: Run `npm start`, open http://localhost:8787 in Chrome or Edge, click **Connect lamp**, and pick 25 minutes. Lumi shows the eyes. Sit down: the bar fills for 5 seconds, then 25:00 starts counting down on Lumi's screen and on the page, with the page showing "focusing."
   Commit: `Verify connection and presence-started countdown`
 
-- [ ] **2. Leave, and Lumi pauses honestly; Focus mode for filming**
+- [x] **2. Leave, and Lumi pauses honestly; Focus mode for filming**
   Becomes usable: Getting up stops the countdown at once with "Where'd you go?", "Paused" after 10 seconds, resuming after 5 seconds seated, and cancelling after 5 minutes away. Focus mode shows only the timer, and leaving it keeps the countdown running.
   Why now: This is the other half of the kernel ("keeps me honest"). It's also the behavior we changed during planning, so it should be checked against the new PRD wording early.
   PRD ref: `prd.md > Pausing When You Leave`, `prd.md > Focus Mode`, `prd.md > States and Boundaries`
@@ -63,7 +63,7 @@ Lumi is already built, so each slice **checks one part of the demo session end t
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 2 (the whole kernel: sit down, leave, come back)
+- [x] Early usable behavior explored — after slice 2 (the whole kernel: sit down, leave, come back)
 - [ ] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
