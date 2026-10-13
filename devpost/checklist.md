@@ -31,7 +31,7 @@ Lumi is already built, so each slice **checks one part of the demo session end t
   Learner check: (1) **The USB investigation** from `spec.md > Decisions and Open Issues`: disconnect the page, open the Arduino IDE's Serial Monitor at 115200 baud, watch the mode number change from `0` to `3` to `4` as you sit, and from `4` to `1` as you leave. Type `MHELLO` and watch it appear on Lumi's screen. Then close the Serial Monitor. (2) Reconnect the page, turn on Focus mode, sit down, get up, and come back: check "Where'd you go?", "Paused", and resuming.
   Commit: `Verify honest pause and Focus mode`
 
-- [ ] **3. At 00:00, a tune and "Done!"**
+- [x] **3. At 00:00, a tune and "Done!"**
   Becomes usable: With a 1-minute custom focus time, the countdown reaches 00:00, Lumi plays the tune and shows "Done! Break time," and the page reacts to the finish.
   Why now: It completes the timer journey. It also tests the short custom time you'll use for filming.
   PRD ref: `prd.md > Finishing a Session`, `prd.md > Product Decisions` (film the finish with about 1 minute)
