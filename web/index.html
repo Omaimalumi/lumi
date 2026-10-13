@@ -537,6 +537,7 @@ h1,h2,h3,p{margin:0}
 .ai-msg.me{align-self:flex-end;background:linear-gradient(135deg,rgba(216,202,240,.22),rgba(235,194,212,.16));border:1px solid rgba(198,180,228,.35);border-bottom-right-radius:6px}
 .ai-msg.bot{align-self:flex-start;background:rgba(255,255,255,.045);border:1px solid var(--edge);border-bottom-left-radius:6px}
 .ai-msg.err{border-color:rgba(242,163,170,.45);color:var(--danger)}
+.ai-msg.oops{border-color:rgba(198,180,228,.45)}.ai-msg.oops .btn{display:flex;margin-top:10px}
 .ai-msg.thinking{color:var(--mist);font-style:italic}
 .ai-msg-tools{display:flex;gap:6px;margin-top:10px;white-space:normal}
 .ai-msg-tools button{border:0;background:none;color:var(--lilac);font-weight:700;font-size:.8rem;cursor:pointer;padding:4px 2px;text-decoration:underline;text-underline-offset:3px}
@@ -1723,7 +1724,16 @@ function renderQuizBar(){if(!quiz)return;
   setText($('quizScore'),'Question '+Math.min(quiz.n||1,QUIZ_LEN)+' of '+QUIZ_LEN+' · '+quizStats.correct+'/'+quizStats.asked+' correct');
   setText($('quizWeak'),quizStats.weak.length?'Weak spot: '+quizStats.weak.join(', '):'')}
 async function aiPost(path,body){const res=await fetch(path,{method:'POST',signal:aiCtl.signal,headers:{'content-type':'application/json'},body:JSON.stringify(body)});
-  let data={};try{data=await res.json()}catch(e){}if(!res.ok)throw new Error(data.error||'The study buddy could not answer.');return data}
+  let data={};try{data=await res.json()}catch(e){}
+  if(!res.ok){const err=new Error(data.error||'The study buddy could not answer.');err.status=res.status;throw err}return data}
+// An AI hiccup mid-quiz never ends the quiz: say so kindly and let the student try again.
+function quizOops(bubble,e,what){bubble.classList.remove('thinking');bubble.classList.add('oops');
+  const m=String(e.message||''),why=e instanceof TypeError?' (is the study server still running?)'
+    :/fetch failed|ENOTFOUND|ECONNRESET|EAI_AGAIN|network/i.test(m)?' (the internet seems to be off)'
+    :/HTTP (503|429)|high demand|quota|rate/i.test(m)?' (Gemini is very busy right now)'
+    :/timed out/i.test(m)?' (Gemini took too long to answer)'
+    :m?' ('+(m.length>90?m.slice(0,90)+'…':m.replace(/\.$/,''))+')':'';
+  bubble.textContent="Hmm, I couldn't "+what+" just now"+why+". Your quiz is safe ♡"}
 function aiFail(bubble,e){bubble.classList.remove('thinking');bubble.classList.add('err');
   bubble.textContent=e.name==='AbortError'?'Cancelled':'Something went wrong: '+(e.message||'Check the study server and try again.')}
 function quizStart(){if(aiBusy||!aiServer)return;quiz={n:0,asked:[],current:null,missed:[],startCorrect:quizStats.correct,startAsked:quizStats.asked};
@@ -1736,7 +1746,12 @@ async function quizNext(){if(!quiz)return;aiBusy=true;aiShow();const bubble=aiBu
     bubble.classList.remove('thinking');bubble.textContent='Question '+quiz.n+' of '+QUIZ_LEN+' · '+d.topic+'\n\n'+d.question;
     aiTurns.push({role:'assistant',content:'Quiz question ('+d.topic+'): '+d.question});
     $('aiInput').placeholder='Type your answer… (Enter to send)';renderQuizBar();
-  }catch(e){aiFail(bubble,e);quizStop()}
+  }catch(e){
+    // Cancelled, or nothing to quiz on (400: no notes yet): end the quiz. Anything else is an AI hiccup: keep it and offer a retry.
+    if(e.name==='AbortError'||e.status===400||!quiz){aiFail(bubble,e);quizStop()}
+    else{quizOops(bubble,e,'write the next question');const b=document.createElement('button');
+      b.type='button';b.className='btn ghost sm';b.textContent='Try again';
+      b.onclick=()=>{b.remove();if(quiz&&!aiBusy)quizNext()};bubble.append(b)}}
   finally{aiBusy=false;aiCtl=null;aiShow();if(quiz&&quiz.current)$('aiInput').focus();$('aiLog').scrollTop=$('aiLog').scrollHeight}}
 async function quizAnswer(text){const q=quiz.current;if(!q||aiBusy)return;aiBubble('me',text);aiBusy=true;aiShow();
   const bubble=aiBubble('bot','Checking your answer…','thinking');aiCtl=new AbortController();let next=false;
@@ -1748,7 +1763,10 @@ async function quizAnswer(text){const q=quiz.current;if(!q||aiBusy)return;aiBubb
     sessionEvent('quiz_answer',{topic:q.topic,correct:!!d.correct});
     recordAnswer(q.topic,!!d.correct);if(!d.correct&&!quiz.missed.includes(q.topic))quiz.missed.push(q.topic);quiz.current=null;renderQuizBar();
     if(quiz.n>=QUIZ_LEN)quizFinish();else next=true;
-  }catch(e){aiFail(bubble,e)}
+  }catch(e){
+    if(e.name==='AbortError'||!quiz)aiFail(bubble,e);
+    else{quizOops(bubble,e,'check that answer');bubble.textContent+=' Press Enter to send your answer again.';
+      $('aiInput').value=text;$('aiInput').focus()}}
   finally{aiBusy=false;aiCtl=null;aiShow();$('aiLog').scrollTop=$('aiLog').scrollHeight}
   if(next)quizNext()}
 function recordAnswer(topic,correct){const key=(topic||'General').trim();

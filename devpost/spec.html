@@ -333,7 +333,7 @@ npm start</pre>
 
 <h2>Where It Could Break</h2>
 <div class="fail">
-  <div><b>Gemini slow or offline</b><span>Friendly "Try again" message. Lamp and timer keep going. <span class="tag">check in build</span> Quiz progress is kept.</span></div>
+  <div><b>Gemini busy, slow, or offline</b><span>Server tries the backup model (<code>gemini-3.5-flash</code>) first. Then a friendly "Your quiz is safe ♡" message with <b>Try again</b>. Lamp and timer keep going. <span class="tag">fixed in build</span></span></div>
   <div><b>Quiz with no notes</b><span>Server already says "Add a course file or write a note first…"</span></div>
   <div><b>Lamp unplugged</b><span>"Lost the lamp connection. Plug it back in…" At most 1 minute lost.</span></div>
   <div><b>Connect fails</b><span>Usually the Serial Monitor is still open, or the browser isn't Chrome or Edge.</span></div>

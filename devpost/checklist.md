@@ -41,7 +41,7 @@ Lumi is already built, so each slice **checks one part of the demo session end t
   Learner check: Set a custom focus time of 1 minute, sit down, and wait. At 00:00, Lumi plays a tune and shows "Done! Break time," and the page shows the session finished.
   Commit: `Verify 1-minute session finish`
 
-- [ ] **4. The AI study buddy quizzes you on your notes**
+- [x] **4. The AI study buddy quizzes you on your notes**
   Becomes usable: Upload notes, click **Quiz me (5 questions)**, and get 5 questions, one at a time, each labelled "Question N of 5 · Topic", graded with an explanation when wrong, ending with "Quiz done: X/5 correct (Y%)" and what to review next. An AI error shows a friendly message and keeps the quiz progress. Quiz me with no notes asks you to upload first.
   Why now: It's the AI moment. It depends on Gemini, which is outside our control, so it comes after the timer is solid. The "AI error keeps progress" rule was flagged as *check in build* in the spec.
   PRD ref: `prd.md > AI Study Buddy Quiz`, `prd.md > States and Boundaries` (AI problem)
@@ -83,3 +83,6 @@ Reflection:
 Activity mode: 
 
 ## Revisions
+
+- A failed quiz question no longer ends the quiz; it shows a friendly message with a Try again button, and a failed grading puts the answer back to resend — the build found that a question error called `quizStop()`, which broke `prd.md > States and Boundaries` (AI problem).
+- Added a backup AI model (`AI_FALLBACK_MODEL=gemini-3.5-flash`) that the server tries once when `gemini-3.8-flash` is busy or slower than 20 seconds — testing found `gemini-3.8-flash` repeatedly answering "high demand" (HTTP 503), a demo risk the spec didn't foresee. The learner chose this over keeping one model.

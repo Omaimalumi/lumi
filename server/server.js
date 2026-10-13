@@ -45,6 +45,8 @@ const APP_PASSWORD = (process.env.APP_PASSWORD || '').trim();
 const RAW_AI_KEY = (process.env.AI_API_KEY || process.env.NEBIUS_API_KEY || '').trim();
 const NEBIUS_API_KEY = /^(paste-your-key-here)?$/i.test(RAW_AI_KEY) ? '' : RAW_AI_KEY;
 const NEBIUS_MODEL = process.env.AI_MODEL || process.env.NEBIUS_MODEL || 'gemini-3.8-flash';
+// Backup model, tried once when the main model is busy (503/429) or too slow. Leave empty to turn off.
+const AI_FALLBACK_MODEL = (process.env.AI_FALLBACK_MODEL || '').trim();
 const NEBIUS_BASE_URL = (process.env.AI_BASE_URL || process.env.NEBIUS_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai').replace(/\/$/, '');
 // PRACTICE_MODE=1 (and no API key) lets you click through every feature with pretend answers.
 // It is clearly labelled in the page and is never used once a real key is set.
@@ -208,8 +210,21 @@ function buildSystemPrompt(baseRules, course, retrieved, note) {
 async function nebiusChat(messages, options = {}) {
   if (!NEBIUS_API_KEY && PRACTICE) return practiceReply(options);
   if (!NEBIUS_API_KEY) throw new Error('AI_API_KEY is not configured on the study server.');
+  const total = options.timeoutMs || 90000;
+  if (!AI_FALLBACK_MODEL || AI_FALLBACK_MODEL === NEBIUS_MODEL) return callModel(NEBIUS_MODEL, messages, options, total);
+  // With a backup: give the main model up to 20 seconds, then hand over if it is busy or slow.
+  try {
+    return await callModel(NEBIUS_MODEL, messages, options, Math.min(20000, Math.round(total / 3)));
+  } catch (error) {
+    if (!(error.busy || error.name === 'AbortError')) throw error;
+    console.log(`${NEBIUS_MODEL} is ${error.busy ? 'busy' : 'too slow'}, trying backup model ${AI_FALLBACK_MODEL}`);
+    return callModel(AI_FALLBACK_MODEL, messages, options, Math.round(total * 2 / 3));
+  }
+}
+
+async function callModel(model, messages, options, timeoutMs) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), options.timeoutMs || 90000);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetch(`${NEBIUS_BASE_URL}/chat/completions`, {
       method: 'POST',
@@ -219,7 +234,7 @@ async function nebiusChat(messages, options = {}) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: NEBIUS_MODEL,
+        model,
         messages,
         temperature: 0.35,
         max_tokens: options.maxTokens || 900
@@ -228,9 +243,12 @@ async function nebiusChat(messages, options = {}) {
     const raw = await response.text();
     let data;
     try { data = JSON.parse(raw); } catch { data = { error: raw }; }
+    if (Array.isArray(data)) data = data[0] || {};   // Gemini sometimes wraps errors in a list
     if (!response.ok) {
       const detail = data?.error?.message || data?.message || data?.error || `HTTP ${response.status}`;
-      throw new Error(`AI request failed: ${detail}`);
+      const error = new Error(`AI request failed: ${detail}`);
+      error.busy = response.status === 503 || response.status === 429;
+      throw error;
     }
     // Nemotron can include its private reasoning in <think> tags — keep only the answer.
     const text = String(data?.choices?.[0]?.message?.content || '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
@@ -487,7 +505,7 @@ app.listen(PORT, HOST, () => {
   console.log(`Lumi study server running at http://localhost:${PORT}`);
   console.log(`Listening on: ${HOST}`);
   console.log(`Password protection: ${APP_PASSWORD ? 'on' : 'off'}`);
-  console.log(`AI model: ${NEBIUS_MODEL}`);
+  console.log(`AI model: ${NEBIUS_MODEL}${AI_FALLBACK_MODEL ? ` (backup: ${AI_FALLBACK_MODEL})` : ''}`);
   console.log(`API key configured: ${Boolean(NEBIUS_API_KEY)}`);
   if (PRACTICE) console.log('PRACTICE MODE: answers are pretend. Add AI_API_KEY to .env for the real AI.');
   if (HOST !== '127.0.0.1' && !APP_PASSWORD) console.log('WARNING: server is reachable from outside but APP_PASSWORD is not set.');

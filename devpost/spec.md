@@ -180,11 +180,12 @@ lumi-study-lamp/
 - **Body:** `{ model: "gemini-3.8-flash", messages: [...], temperature: 0.35, max_tokens: ... }`
 - **Response:** `choices[0].message.content`. For the quiz, this is a JSON object as text.
 - **Timeout:** the server gives up after 90 seconds.
+- **Backup model** (added during `5-build`, the learner's decision): `AI_FALLBACK_MODEL=gemini-3.5-flash` in `.env`. If `gemini-3.8-flash` answers "busy" (HTTP 503 or 429) or takes longer than 20 seconds, the server tries the backup model once with the remaining time. Leave it empty to turn the backup off.
 - **Cost and limits:** a free key from https://aistudio.google.com/apikey. Free keys have rate limits. The exact limits weren't checked during planning.
 - **Docs:** https://ai.google.dev/gemini-api/docs/openai
 
 ## Important Failure Modes
-- **Gemini is slow, fails, or the internet drops** → the server returns a friendly error ("The AI request timed out. Try again."). The lamp and the timer keep going. *To check in the build:* that the quiz keeps its progress and you can try that question again (`prd.md > States and Boundaries`).
+- **Gemini is slow, fails, or the internet drops** → the server first tries the backup model. If that fails too, the study buddy says, for example, "Hmm, I couldn't write the next question just now (Gemini is very busy right now). Your quiz is safe ♡", with a **Try again** button. If grading fails, your answer goes back in the box, and you press Enter again. The lamp and the timer keep going. (Fixed in `5-build`: before, a failed question ended the quiz.)
 - **Quiz me with no notes uploaded** → the server already answers "Add a course file or write a note first, so I know what to quiz you on." This settles the PRD's assumption.
 - **The lamp is unplugged** → the page shows "Lost the lamp connection. Plug it back in…" The lamp loses power, and at most one minute of today's total is lost.
 - **Connect lamp fails** → usually the Arduino Serial Monitor is still open, or the browser isn't Chrome or Edge. The fix: close the Serial Monitor, then use Chrome or Edge.
@@ -211,7 +212,7 @@ lumi-study-lamp/
 - *Small investigation during the build* (about 5 minutes, no code changes): with the page disconnected, open the Arduino IDE's **Serial Monitor** at 115200 baud. Watch the mode number change from `0` to `3` to `4` as you sit down, and from `4` to `1` as you leave. Then type `MHELLO` and watch it appear on Lumi's screen.
 
 **To check early in the build**
-- An AI error in the middle of the quiz keeps the quiz progress, and you can retry.
+- ~~An AI error in the middle of the quiz keeps the quiz progress, and you can retry.~~ Checked and fixed in slice 4.
 - What happens to `REVIEW:` messages longer than 21 characters.
 
 **Carried over from `prd.md > Open Questions`**
