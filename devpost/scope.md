@@ -57,6 +57,7 @@ Most of this is already built. This hackathon is about making it run smoothly as
 - **Break timer** after "DONE"
 - **AI explanations** of the learner's notes (the quiz is the one AI moment for the demo)
 - **Weak spots** shown on Lumi's screen (for example, `REVIEW: METAPHASE`)
+- **Water reminders:** after a set time, Lumi reminds you to drink water and waits for you (raised in the final review; skipped for this submission)
 - Fitting the hardware inside a real lamp
 
 ## Explicitly Cut

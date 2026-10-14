@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumi App Map</title>
+<style>
+:root{--bg:#15121B;--panel:#1D1925;--edge:rgba(255,255,255,.1);--text:#F3EEF8;--mist:#BDB3CC;--honey:#F1D3A6;--lilac:#C6B4E4;--mint:#A0D6B4}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:2rem;margin:0 0 4px}h2{font-size:1.25rem;margin:36px 0 10px;color:var(--honey)}
+p{margin:8px 0}.sub{color:var(--mist);margin:0 0 20px}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:16px;padding:16px 18px;margin:12px 0}
+.pieces{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.pieces .card{margin:0}.pieces h3{margin:0 0 4px;font-size:1rem;color:var(--lilac)}
+code{background:rgba(255,255,255,.07);padding:1px 6px;border-radius:6px;font-size:.92em;word-break:break-word}
+ol.route{padding-left:20px}ol.route li{margin:0 0 14px}
+.where{color:var(--mist);font-size:.92rem}
+svg{width:100%;height:auto;display:block}
+svg text{fill:var(--text);font:13px system-ui,sans-serif}
+svg .small{fill:var(--mist);font-size:11px}
+svg rect.box{fill:var(--panel);stroke:var(--lilac);stroke-width:1.5}
+svg rect.out{fill:#2A2333;stroke:var(--honey);stroke-width:1.5}
+svg path{stroke:var(--honey);stroke-width:1.5;fill:none}
+ul{padding-left:20px}li{margin:4px 0}
+details{margin:10px 0}summary{cursor:pointer;color:var(--lilac);font-weight:600}
+summary:focus-visible{outline:2px solid var(--honey);outline-offset:3px;border-radius:4px}
+.foot{margin-top:40px;color:var(--mist);font-size:.88rem}
+</style>
+</head>
+<body>
+<main>
+<h1>Lumi: App Map</h1>
+<p class="sub">A study lamp that notices when you sit down, counts down your focus time, pauses when you leave, and quizzes you on your own notes.</p>
+
+<h2>The three main pieces</h2>
+<div class="pieces">
+  <div class="card"><h3>The lamp</h3><p><code>arduino/lumi_lamp/lumi_lamp.ino</code></p><p>Reads the distance sensor, runs the countdown, draws the eyes and text on the small screen, and plays the tune.</p></div>
+  <div class="card"><h3>The web page</h3><p><code>web/index.html</code></p><p>Talks to the lamp over USB (Web Serial), mirrors the timer, and runs the study buddy quiz.</p></div>
+  <div class="card"><h3>The study server</h3><p><code>server/server.js</code></p><p>Serves the page, stores uploaded notes, and asks Google Gemini to write and grade quiz questions.</p></div>
+</div>
+
+<h2>Follow one action: a wrong answer becomes a weak spot on the lamp</h2>
+<div class="card">
+<svg viewBox="0 0 820 200" role="img" aria-labelledby="flowT flowD">
+  <title id="flowT">Weak-spot flow</title>
+  <desc id="flowD">You answer a quiz question in the page. The page asks the server to grade it, the server asks Gemini, the page counts the result, and if a topic is weak it sends REVIEW text over USB to the lamp screen.</desc>
+  <rect class="box" x="10" y="20" width="170" height="70" rx="12"/><text x="24" y="48">You answer a question</text><text class="small" x="24" y="70">web/index.html · quizAnswer</text>
+  <rect class="box" x="220" y="20" width="170" height="70" rx="12"/><text x="234" y="48">Server grades it</text><text class="small" x="234" y="70">server.js · /api/quiz/grade</text>
+  <rect class="box" x="430" y="20" width="170" height="70" rx="12"/><text x="444" y="48">Page counts the topic</text><text class="small" x="444" y="70">recordAnswer → flagWeak</text>
+  <rect class="out" x="640" y="20" width="170" height="70" rx="12"/><text x="654" y="48">Lumi shows REVIEW</text><text class="small" x="654" y="70">lumi_lamp.ino · kind 'M'</text>
+  <rect class="box" x="220" y="125" width="170" height="54" rx="12"/><text x="250" y="157">Google Gemini</text>
+  <path d="M180 55 H220"/><path d="M390 55 H430"/><path d="M600 55 H640"/>
+  <path d="M305 90 V125"/>
+  <text class="small" x="606" y="110">USB: M + lampReview text</text>
+</svg>
+</div>
+
+<h2>Code route (reference)</h2>
+<p class="where">Search for the names in <code>code</code> style to jump to each stop. Line numbers drift as the code changes; names don't.</p>
+<ol class="route">
+  <li><b>The page sends your answer.</b> <code>web/index.html</code>, function <code>quizAnswer</code>. It shows "Checking your answer…", posts to <code>/api/quiz/grade</code>, and shows ✓ or ✗ with an explanation. If the AI fails, it puts your answer back so you can press Enter to try again.</li>
+  <li><b>The server grades it with Gemini.</b> <code>server/server.js</code>, route <code>app.post('/api/quiz/grade'</code>. It builds a short grading prompt and returns <code>{correct, feedback}</code>.</li>
+  <li><b>The page decides it's a weak spot and tells Lumi.</b> <code>web/index.html</code>, functions <code>recordAnswer</code>, <code>lampReview</code>, <code>flagWeak</code>. A topic is weak when you've missed it more often than you got it right. <code>lampReview</code> shortens the text to Lumi's 21 characters, and <code>sendMsg</code> sends it as an <code>M</code> message. On the lamp, <code>arduino/lumi_lamp/lumi_lamp.ino</code> handles <code>kind == 'M'</code> and shows the note for 4 seconds.</li>
+</ol>
+
+<h2>To change this, start here</h2>
+<ul>
+  <li><b>How many quiz questions:</b> <code>QUIZ_LEN</code> in <code>web/index.html</code>.</li>
+  <li><b>When a topic counts as weak:</b> the <code>weakNow</code> line in <code>recordAnswer</code>.</li>
+  <li><b>How long a note stays on Lumi's screen:</b> <code>noteUntil = millis() + 4000</code> in <code>lumi_lamp.ino</code> (milliseconds; re-upload the sketch after changing it).</li>
+  <li><b>How strict the AI grading is:</b> the <code>system</code> prompt in the <code>/api/quiz/grade</code> route in <code>server/server.js</code>.</li>
+  <li><b>Which AI model is used:</b> <code>AI_MODEL</code> and <code>AI_FALLBACK_MODEL</code> in <code>.env</code> (see <code>.env.example</code>).</li>
+</ul>
+
+<h2>A practice to reuse</h2>
+<div class="card">
+<p><b>Write the rule as something you can observe, then test that exact thing.</b> The PRD said an AI error must keep your quiz progress (<code>prd.md &gt; States and Boundaries</code>), and the checklist turned that into a test: turn off Wi-Fi mid-quiz and check that the quiz continues. Building slice 4 against that rule exposed a real bug: a failed question called <code>quizStop()</code> and ended the quiz. The fix is recorded under <b>Revisions</b> in <code>devpost/checklist.md</code>.</p>
+<p>On your next project, before asking an agent to build something, write down what you should <i>see</i> when it works, including when something goes wrong. That gives both of you a clear way to check the result.</p>
+</div>
+
+<h2>Run it again</h2>
+<details open>
+<summary>Start Lumi</summary>
+<ol>
+  <li>In the project folder, run <code>npm install</code> once, then <code>npm start</code>.</li>
+  <li>Open <code>http://localhost:8787</code> in Chrome or Edge.</li>
+  <li>Plug in the lamp and click <b>Connect lamp</b>. Close the Arduino Serial Monitor first; only one program can use the port.</li>
+</ol>
+</details>
+
+<p class="foot">Snapshot of the code at commit <code>707d76e</code> (after build slice 5). The code may change later, so names and lines here can drift.</p>
+</main>
+</body>
+</html>
