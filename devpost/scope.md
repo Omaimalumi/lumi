@@ -58,6 +58,8 @@ Most of this is already built. This hackathon is about making it run smoothly as
 - **AI explanations** of the learner's notes (the quiz is the one AI moment for the demo)
 - **Weak spots** shown on Lumi's screen (for example, `REVIEW: METAPHASE`)
 - **Water reminders:** after a set time, Lumi reminds you to drink water and waits for you (raised in the final review; skipped for this submission)
+- **PDF viewer:** open and read your uploaded PDF notes inside the page (today Lumi only reads their text for the quiz)
+- **AI without an API key:** talk to an AI model running on your own computer (today, practice mode without a key gives pretend answers)
 - Fitting the hardware inside a real lamp
 
 ## Explicitly Cut
