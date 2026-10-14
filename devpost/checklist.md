@@ -74,15 +74,15 @@ Outcome: the learner tried all five slices and reported them "working smooth," r
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [x] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
 - [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence: 
-Route and stops: 
-Edit outcome: 
-Reflection: 
-Activity mode: 
+Activity and evidence: Guided route offered (wrong quiz answer → `REVIEW: TOPIC` on Lumi). The learner checked the route and app map on their own and reported "it works cool"; individual stops were not walked through together in chat.
+Route and stops: `web/index.html` quizAnswer → `server/server.js` /api/quiz/grade → `web/index.html` recordAnswer / lampReview / flagWeak → `lumi_lamp.ino` kind M (reference route in the app map).
+Edit outcome: Not done; the learner is submitting today.
+Reflection: Offered as optional at hand-off.
+Activity mode: Guided route (self-directed check).
 
 ## Revisions
 
