@@ -64,17 +64,19 @@ Lumi is already built, so each slice **checks one part of the demo session end t
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 2 (the whole kernel: sit down, leave, come back)
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Final review complete — feedback resolved and learner confirms ready to ship
+
+Outcome: the learner tried all five slices and reported them "working smooth," requested no changes, and plans to submit as is. A new idea (water reminders) was raised and moved to `scope.md > Later` instead of being built.
 
 ## Code Tour and App Map
 
 - [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
 - [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
 Activity and evidence: 
 Route and stops: 
