@@ -51,7 +51,7 @@ Lumi is already built, so each slice **checks one part of the demo session end t
   Learner check: Upload your own notes to the Course library, scroll to the Study buddy, click **Quiz me (5 questions)**, and answer all 5 (get at least one wrong on purpose). Check the "Question N of 5 · Topic" label, the explanation when wrong, and the final score. Then turn off Wi-Fi, start another quiz, answer a question, and check that you see a friendly message and that the quiz continues after Wi-Fi is back on.
   Commit: `Verify AI quiz and keep progress on AI errors`
 
-- [ ] **5. Weak spots show on Lumi's screen**
+- [x] **5. Weak spots show on Lumi's screen**
   Becomes usable: Missing a topic more often than getting it right sends `REVIEW: TOPIC` to Lumi's screen, and long topics still fit within the lamp's 21 characters.
   Why now: It connects the AI to the lamp, so it needs both the connection (slice 1) and the quiz (slice 4) to be working first.
   PRD ref: `prd.md > Weak Spots on the Lamp`

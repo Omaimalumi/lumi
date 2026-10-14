@@ -1775,8 +1775,13 @@ function recordAnswer(topic,correct){const key=(topic||'General').trim();
   const weakNow=t.wrong>t.right,flagged=quizStats.weak.includes(key);
   if(weakNow&&!flagged){quizStats.weak.push(key);flagWeak(key)}
   else if(!weakNow&&flagged){quizStats.weak=quizStats.weak.filter(x=>x!==key);toast(key+' is getting stronger 💪',{tone:'ok'})}}
+// The lamp shows one line of 21 characters. Keep whole words; if one word is too long, cut it and end with a dot.
+function lampReview(topic){const pre='REVIEW: ',room=21-pre.length;
+  const t=toLamp(String(topic||'').toUpperCase()).replace(/\s+/g,' ').trim();if(t.length<=room)return pre+t;
+  let out='';for(const w of t.split(' ')){const next=out?out+' '+w:w;if(next.length>room)break;out=next}
+  return pre+(out||t.slice(0,room-1)+'.')}
 function flagWeak(topic){sessionEvent('weak_area',{topic});
-  if(connected){sendMsg('REVIEW: '+topic.toUpperCase(),$('quizBar'));toast('Weak spot found: '+topic+'. Sent to your lamp 💡')}
+  if(connected){sendMsg(lampReview(topic),$('quizBar'));toast('Weak spot found: '+topic+'. Sent to your lamp 💡')}
   else toast('Weak spot found: '+topic)}
 function quizFinish(){const asked=quizStats.asked-quiz.startAsked,right=quizStats.correct-quiz.startCorrect,pct=asked?Math.round(right/asked*100):0;
   const w=quizStats.weak;
