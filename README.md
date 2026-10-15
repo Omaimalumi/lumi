@@ -1,4 +1,5 @@
-# Lumi — the study lamp that opens its eyes when you open your books
+# Lumi — the study lamp that opens its eyes when you open your books 
+<img width="100%" alt="Cyan OLED Eyes on Arduino Project" src="https://github.com/user-attachments/assets/dda8d7a0-dce2-4ae8-bdd4-f085ab939594" />
 
 A physical AI study companion. The lamp notices when you sit down and tracks your real study
 time. The web app runs the session. An AI study buddy (**Google Gemini**) teaches you from
